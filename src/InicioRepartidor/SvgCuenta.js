@@ -1,0 +1,72 @@
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import { SvgXml } from 'react-native-svg';
+
+const SvgCuenta = (props) => {
+    const svgXml = `
+        <?xml version="1.0" encoding="utf-8"?>
+        <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 85.68 85.68" style="enable-background:new 0 0 85.68 85.68;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:url(#SVGID_1_);stroke-miterlimit:10;}
+	.st1{fill:url(#XMLID_00000012437966226082771050000014073080809551856552_);}
+	.st2{fill:url(#XMLID_00000073714324894420071690000005603756841189216702_);}
+</style>
+<g>
+	<g>
+		<g>
+			
+				<image style="overflow:visible;opacity:0.75;" width="103" height="103" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGgAAABoCAYAAAAdHLWhAAAACXBIWXMAAAsSAAALEgHS3X78AAAA
+GXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAENJREFUeNrswYEAAAAAw6D5U1/g
+CFUBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB8E2AAqWgAAdpsMJsA
+AAAASUVORK5CYII=" transform="matrix(1 0 0 1 -11 -11)">
+			</image>
+		</g>
+		<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="0.6425" y1="42.8375" x2="85.0326" y2="42.8375">
+			<stop  offset="0" style="stop-color:#F52A2A"/>
+			<stop  offset="1" style="stop-color:#FD5555"/>
+		</linearGradient>
+		<path class="st0" d="M79.35,84.5H6.32c-2.85,0-5.18-2.33-5.18-5.18V6.35c0-2.85,2.33-5.18,5.18-5.18h73.03
+			c2.85,0,5.18,2.33,5.18,5.18v72.97C84.53,82.17,82.2,84.5,79.35,84.5z"/>
+	</g>
+	
+		<linearGradient id="XMLID_00000070101710915162062730000001659230051871368363_" gradientUnits="userSpaceOnUse" x1="30.4441" y1="42.8375" x2="56.6434" y2="42.8375">
+		<stop  offset="0" style="stop-color:#F52A2A"/>
+		<stop  offset="0.7671" style="stop-color:#FD5555"/>
+	</linearGradient>
+	
+		<path id="XMLID_00000137819533991716918580000005558164066997812618_" style="fill:url(#XMLID_00000070101710915162062730000001659230051871368363_);" d="
+		M34.62,59.7h17.84c2.3,0,4.18-1.88,4.18-4.18V44.1c0-2.12-1.58-3.87-3.63-4.14v-4.52c0-5.22-4.25-9.47-9.47-9.47
+		c-5.22,0-9.47,4.25-9.47,9.47v4.52c-2.05,0.27-3.63,2.02-3.63,4.14v11.43C30.44,57.83,32.32,59.7,34.62,59.7z M32.01,44.1
+		c0-1.44,1.17-2.62,2.62-2.62h17.84c1.44,0,2.62,1.17,2.62,2.62v11.43c0,1.44-1.17,2.62-2.62,2.62H34.62
+		c-1.44,0-2.62-1.17-2.62-2.62V44.1z M43.54,27.53c4.36,0,7.91,3.55,7.91,7.91v4.48H50.2v-4.48c0-3.67-2.99-6.66-6.66-6.66
+		c-3.67,0-6.66,2.99-6.66,6.66v4.48h-1.25v-4.48C35.64,31.08,39.18,27.53,43.54,27.53z M48.64,39.92h-10.2v-4.48
+		c0-2.81,2.29-5.1,5.1-5.1c2.81,0,5.1,2.29,5.1,5.1V39.92z"/>
+	
+		<linearGradient id="XMLID_00000034783267463807521700000004734668202343527860_" gradientUnits="userSpaceOnUse" x1="41.3611" y1="49.81" x2="45.7259" y2="49.81">
+		<stop  offset="0" style="stop-color:#F52A2A"/>
+		<stop  offset="0.7671" style="stop-color:#FD5555"/>
+	</linearGradient>
+	
+		<path id="XMLID_00000166636627931627166460000004746109028478309797_" style="fill:url(#XMLID_00000034783267463807521700000004734668202343527860_);" d="
+		M41.99,54.05h3.12c0.34,0,0.62-0.28,0.62-0.62V46.2c0-0.35-0.28-0.62-0.62-0.62h-3.12c-0.35,0-0.62,0.28-0.62,0.62v7.22
+		C41.36,53.77,41.64,54.05,41.99,54.05z M42.61,46.82h1.87v5.97h-1.87V46.82z"/>
+</g>
+</svg>
+    `;
+
+    return (
+        <View style={styles.container}>
+            <SvgXml xml={svgXml} height={80} width={80} fill={props.fill} stroke={props.stroke} strokeWidth={0.5} />
+        </View>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+});
+
+export default SvgCuenta;
