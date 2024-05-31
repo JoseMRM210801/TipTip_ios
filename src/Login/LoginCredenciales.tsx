@@ -223,7 +223,7 @@ export const LoginCredenciales = () => {
                                     }
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={() => { navigate.navigate('ResetPassword' as never); }} style={{ alignSelf: 'center', marginTop: 20 }}>
-                                    <Text style={{ color: '#ffffff', fontSize: 18 }}>{ingles ? idiomaIngles.olvidoContrasena : idiomaSpanol.olvidoContrasena}</Text>
+                                    <Text style={{ color: '#000000', fontSize: 18 }}>{ingles ? idiomaIngles.olvidoContrasena : idiomaSpanol.olvidoContrasena}</Text>
                                 </TouchableOpacity>
                             </ScrollView>
 

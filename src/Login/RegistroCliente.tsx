@@ -1,11 +1,10 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, Image, StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native';
+import { View, Image, StyleSheet, Text, TextInput, TouchableOpacity, Modal } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { Formik } from 'formik';
 import RNPickerSelect from 'react-native-picker-select';
 import { ScrollView } from 'react-native-gesture-handler';
 import SvgFlecha from '../Admin/SvgFlecha';
-// Importa el esquema de validación de Yup
 import { clientSchemaValidation, clientSchemaValidationEn } from '../modules/registroCliente.tsx';
 import { defaultStyle } from '../Theme/Theme.tsx';
 import { Usuario } from '../Modelos/Usuario';
@@ -16,31 +15,41 @@ import DeviceInfo from 'react-native-device-info';
 export const RegistroCliente = () => {
     const fondo: any = require("../../assets/Fondo-Tiptip-01.jpg");
     const logo: any = require("../../assets/Logo-Tiptip-02.png");
+    const ojo: any = require("../../assets/ojo.png");
+    const ojoc: any = require("../../assets/ojoc.png");
     const [focus, setFocus] = useState("");
     const isIOS = DeviceInfo.getSystemName() === 'iOS';
     const contexto = useContext(AppContext);
     const navigate = useNavigation();
     const [ingles, setIngles] = useState(contexto.usuario.English);
+    const [showPassword, setShowPassword] = useState(false);
+    const [repeatPassword, setRepeatPassword] = useState('');
+    const [showModal, setShowModal] = useState(false);
+
     useEffect(() => {
         setIngles(contexto.usuario.English);
-    }, [contexto.usuario.English])
+    }, [contexto.usuario.English]);
+
     const handleFocus = (nombreInput: string) => {
         setFocus(nombreInput);
     }
+
     const [ciudades, setCiudades] = useState([]);
     const [estados, setEstados] = useState([]);
     const [selectedEstado, setSelectedEstado] = useState('');
+
     const idiomaSpanol = {
         saludo: "Registrate aquí en segundos",
         peticion: 'Por favor llena tus datos personales solo esta vez.',
         btn: 'Iniciar',
-
-    }
+        contrasenasNoIguales: 'Las contraseñas no son iguales'
+    };
 
     const idiomaIngles = {
         saludo: "Register here in seconds",
-        peticion: 'Please fill in your personal information only this time.',
+        peticion: 'Please fill out the information only this time.',
         btn: 'Start',
+        contrasenasNoIguales: 'Passwords do not match'
     };
 
     const InsertClient = async (nombre: string, apellido: string, email: string, estado: string, ciudad: string, contrasenia: string) => {
@@ -58,8 +67,7 @@ export const RegistroCliente = () => {
             Token: "",
             User: ""
         }
-        //fetch('http://192.168.1.72:8090/api/client/signin', {
-            fetch('https://bett-production.up.railway.app/api/client/signin', {
+        fetch('https://bett-production.up.railway.app/api/client/signin', {
             method: 'POST',
             mode: 'cors',
             headers: {
@@ -67,23 +75,21 @@ export const RegistroCliente = () => {
             },
             body: JSON.stringify(newClient)
         })
-            .then(res => { return res.json() })
+            .then(res => res.json())
             .then(data => {
                 contexto.setUsuario(data);
-                navigate.navigate("Credenciales" as never)
-                //guardar en localStorage para permanencia de credencial
+                navigate.navigate("Credenciales" as never);
             }).catch(error => console.error('Error:', error));
-
     }
+
     useEffect(() => {
-        // Fetch para obtener la lista de estados
         fetch('https://parseapi.back4app.com/classes/Usabystate_States?keys=name,postalAbreviation', {
             headers: {
                 'X-Parse-Application-Id': '5bV2naG0lkGPhWU3Dewaem9CgMsViox5S8t7gv2q',
                 'X-Parse-REST-API-Key': '9G3Cn1iMtA284ZWRvUoBywDZBE99eGqOni4bi8vO',
             },
         })
-            .then(response => { return response.json() })
+            .then(response => response.json())
             .then(data => {
                 setEstados(data.results.map((estado: { name: any; postalAbreviation: any; }) => ({
                     label: estado.name,
@@ -94,20 +100,18 @@ export const RegistroCliente = () => {
     }, []);
 
     useEffect(() => {
-        // Verificar que se haya seleccionado un estado antes de hacer el fetch
         if (selectedEstado) {
-            // Fetch para obtener la lista de ciudades basada en el estado seleccionado
             fetch(`https://parseapi.back4app.com/classes/Usabystate_${selectedEstado}?keys=name`, {
                 headers: {
                     'X-Parse-Application-Id': '5bV2naG0lkGPhWU3Dewaem9CgMsViox5S8t7gv2q',
                     'X-Parse-REST-API-Key': '9G3Cn1iMtA284ZWRvUoBywDZBE99eGqOni4bi8vO',
                 },
             })
-                .then(response => { return response.json() })
+                .then(response => response.json())
                 .then(data => {
                     setCiudades(data.results.map((ciudad: { name: any; }) => ({
                         label: ciudad.name,
-                        value: ciudad.name,  // Actualiza esto con el campo correcto que debería usarse como valor
+                        value: ciudad.name,
                     })));
                 })
                 .catch(error => console.error('Error fetching ciudades:', error));
@@ -148,7 +152,11 @@ export const RegistroCliente = () => {
                 }}
                 validationSchema={ingles ? clientSchemaValidationEn : clientSchemaValidation}
                 onSubmit={(values) => {
-                    InsertClient(values.nombre, values.apellido, values.email, values.estado, values.ciudad, values.contrasenia)
+                    if (values.contrasenia !== repeatPassword) {
+                        setShowModal(true);
+                        return;
+                    }
+                    InsertClient(values.nombre, values.apellido, values.email, values.estado, values.ciudad, values.contrasenia);
                 }}
             >
                 {({ handleChange, handleBlur, handleSubmit, values, errors, touched, isSubmitting }) => (
@@ -215,7 +223,6 @@ export const RegistroCliente = () => {
                                             backgroundColor: '#fff',
                                             height: '100%',
                                             padding: 10
-
                                         },
                                     }}
                                 />
@@ -245,18 +252,34 @@ export const RegistroCliente = () => {
                                     }}
                                 />
                             </View>
-                            <TextInput
-                                style={[styles.input, focus === 'input4' && styles.textInputFocused]}
-                                onFocus={() => { handleFocus('input4') }}
-                                placeholder={ingles ? 'Password' : 'Contraseña'}
-                                placeholderTextColor="#282828"
-                                onChangeText={handleChange('contrasenia')}
-                                onBlur={handleBlur('contrasenia')}
-                                value={values.contrasenia}
-                                keyboardType="default"
-                                secureTextEntry
-                            />
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <TextInput
+                                    style={[styles.input, focus === 'input4' && styles.textInputFocused, { flex: 1 }]}
+                                    onFocus={() => { handleFocus('input4') }}
+                                    placeholder={ingles ? 'Password' : 'Contraseña'}
+                                    placeholderTextColor="#282828"
+                                    onChangeText={handleChange('contrasenia')}
+                                    onBlur={handleBlur('contrasenia')}
+                                    value={values.contrasenia}
+                                    keyboardType="default"
+                                    secureTextEntry={!showPassword}
+                                />
+                                <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={{ marginLeft: 10 }}>
+                                    <Image source={showPassword ? ojoc : ojo} alt="ojo" style={styles.ojo} />
+                                </TouchableOpacity>
+                            </View>
                             {errors.contrasenia && touched.contrasenia && <Text style={{ color: 'red' }}>{errors.contrasenia}</Text>}
+                            <TextInput
+                                style={[styles.input, focus === 'input5' && styles.textInputFocused]}
+                                onFocus={() => { handleFocus('input5') }}
+                                placeholder={ingles ? 'Repeat Password' : 'Repetir Contraseña'}
+                                placeholderTextColor="#282828"
+                                onChangeText={(text) => setRepeatPassword(text)}
+                                onBlur={() => handleFocus('')}
+                                value={repeatPassword}
+                                keyboardType="default"
+                                secureTextEntry={!showPassword}
+                            />
                         </ScrollView>
                         <TouchableOpacity
                             style={{ margin: 5, padding: 10, backgroundColor: 'rgb(212,46,46)', borderRadius: 8, width: '45%', marginTop: 12 }}
@@ -270,6 +293,24 @@ export const RegistroCliente = () => {
                     </LinearGradient>
                 )}
             </Formik>
+            <Modal
+                transparent={true}
+                visible={showModal}
+                animationType="slide"
+                onRequestClose={() => setShowModal(false)}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalText}>{ingles ? idiomaIngles.contrasenasNoIguales : idiomaSpanol.contrasenasNoIguales}</Text>
+                        <TouchableOpacity
+                            style={styles.modalButton}
+                            onPress={() => setShowModal(false)}
+                        >
+                            <Text style={styles.modalButtonText}>OK</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 };
@@ -281,6 +322,10 @@ const styles = StyleSheet.create({
         alignContent: 'center',
         position: 'relative',
         alignItems: 'center'
+    },
+    ojo: {
+        height: 25,
+        width: 25,
     },
     backgroundImageContainer: {
         height: '100%',
@@ -387,7 +432,7 @@ const styles = StyleSheet.create({
     flecha: {
         position: 'absolute',
         left: 10,
-        top:10,
+        top: 10,
         paddingTop: 5
     },
     textoOpciones: {
@@ -397,5 +442,33 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         marginTop: 4,
         borderRadius: 4
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0,0,0,0.5)',
+    },
+    modalContent: {
+        width: '80%',
+        padding: 20,
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        alignItems: 'center',
+    },
+    modalText: {
+        fontSize: 18,
+        marginBottom: 15,
+    },
+    modalButton: {
+        padding: 10,
+        backgroundColor: 'rgb(212,46,46)',
+        borderRadius: 8,
+        width: '50%',
+        alignItems: 'center',
+    },
+    modalButtonText: {
+        color: 'white',
+        fontSize: 16,
     },
 });

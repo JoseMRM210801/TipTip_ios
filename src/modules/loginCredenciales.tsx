@@ -20,3 +20,4 @@ export let resetPasswordSchemaValidationEn = object({
     contrasenia: string().required("The password is required").min(8, "The password must have at least 8 characters"),
     servicio: string().required("The service is required"),
 })
+

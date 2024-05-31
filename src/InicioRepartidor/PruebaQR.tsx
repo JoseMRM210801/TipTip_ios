@@ -7,11 +7,11 @@ import LinearGradient from "react-native-linear-gradient";
 import { defaultStyle } from '../Theme/Theme';
 import SvgFlecha from '../Admin/SvgFlecha';
 import { AppContext } from '../Contexto/AppContext';
-import paypalApi from './paypalApi';
+
 import { Loader } from '../Loader/Loader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export const BotonPropina = () => {
+export const PruebaQR = () => {
     const fondo = require("../../assets/Fondo-Tiptip-01.jpg");
     const boton1 = require("../../assets/Boton-especial-01.png");
     const boton3 = require("../../assets/Boton-especial-03.png");
@@ -30,20 +30,6 @@ export const BotonPropina = () => {
     const [paypalUrl, setPaypalUrl] = useState(null)
     const [accessToken, setAccessToken] = useState(null)
     const [isLoaded, setIsLoaded] = useState(false)
-    const onPressPaypal = async () => {
-    
-        const token = await paypalApi.generateToken(contexto.usuario.Token);
-        const res = await paypalApi.createOrder(token, contador);
-        console.log("res", res);
-        console.log("token", token)
-        setAccessToken(token);
-        //console.log("res++++++", res)
-        if (res.links) {
-            const findUrl = res.links.find((data) => data?.rel == "approve");
-            setPaypalUrl(findUrl.href);
-
-        }
-    }
     
     const onUrlChange = (webviewState) => {
         //console.log("webviewStatewebviewState", webviewState)
@@ -121,13 +107,13 @@ export const BotonPropina = () => {
 
     const idiomaIngles = {
         salir: 'Exit',
-        pregunta: 'Did you like the provided service?',
-        propuesta: `Your ${codigo} supplier receives`,
+        pregunta: 'This is your code',
+        propuesta: `${codigo}`,
     };
     const idiomaSpanol = {
         salir: 'Salir',
-        pregunta: '¿Cuánto quieres dar de propina?',
-        propuesta: `Tu proveedor ${codigo} recibe`,
+        pregunta: 'Este es tu codigo',
+        propuesta: `${codigo}`,
     }
     let valorInput = "";
     const navigate = useNavigation();
@@ -153,35 +139,6 @@ export const BotonPropina = () => {
     const handleRating = (value) => {
         setRating(value);
     };
-    const salir = async () => {
-        const limpiarUsuario = {
-            Id: "",
-            City: "",
-            Email: "",
-            Insignia: "",
-            Is_Verified: false,
-            LastName: "",
-            Name: "",
-            Password: "",
-            Role_Id: "",
-            State: "",
-            Token: "",
-            User: ""
-        }
-        contexto.setUsuario(limpiarUsuario);
-        //seria limpiar el local storage 
-        try {
-            await AsyncStorage.removeItem('email');
-            await AsyncStorage.removeItem('password');
-        } catch (error) {
-            console.log(error);
-        }
-        navigate.navigate('Login');
-    }
-
-    //const rating = (stars: number) => { return `★★★★★☆☆☆☆☆`.slice(5 - stars, 10 - stars); }
-    const stars = ['☆', '☆', '☆', '☆', '☆'];
-    const starsFill = ['★', '★', '★', '★', '★'];
 
     useEffect(() => {
         // fetch(`http://192.168.0.7:8090/api/delivery/${value}`,
@@ -240,84 +197,14 @@ export const BotonPropina = () => {
                     style={styles.contenedorBoton}>
                     <ScrollView style={{ width: '90%' }}>
                         <Text style={styles.textoPregunta}>{ingles ? idiomaIngles.pregunta : idiomaSpanol.pregunta}</Text>
+                        <Image style={styles.Logo}
+                        source={require("../../assets/Logo-Tiptip-02.png")}/> 
                         <Text style={styles.textoNormal}>{ingles ? idiomaIngles.propuesta : idiomaSpanol.propuesta}</Text>
                         <TouchableOpacity
                             style={styles.buttonEspecial}
                             onPress={handlePress}
                         >
-                            <Image
-                                source={isPressed ? boton1 : boton3}
-                                style={{ height: 200, width: 250, resizeMode: 'contain' }}
-                            />
-                        </TouchableOpacity>
-
-
-                        <View style={styles.contenedorEstrellas}>
-                            {
-                                stars.map((star, idx) => {
-                                    return (
-                                        <TouchableOpacity
-                                            key={idx}
-                                            onPress={() => handleRating(idx)}
-                                            activeOpacity={0.7}
-                                        >
-                                            <Text style={rating >= idx ? styles.estrellaLlena : styles.estrellaVacia}>{rating >= idx ? starsFill[idx] : star}</Text>
-
-                                        </TouchableOpacity>
-                                    )
-                                })
-                            }
-                        </View>
-
-                        <View style={styles.contenedorBotones}>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    if (contador > 0) {
-                                        setContador(contador - 1);
-                                    }
-                                }}>
-                                <LinearGradient
-                                    colors={['rgba(255,255,255,1)', 'rgba(222,222,222,1)', 'rgba(255,255,255,1)']}
-                                    start={{ x: 0, y: 0.5 }}
-                                    end={{ x: 1, y: 1.5 }}
-                                    style={[styles.botonesInput]}
-                                >
-                                    <Text style={styles.buttonText}>-</Text>
-                                </LinearGradient>
-                            </TouchableOpacity>
-                            <View style={{ width: '28%', alignItems: 'center' }}>
-                                <TextInput
-                                    placeholder={contador.toString()}
-                                    placeholderTextColor="#282828"
-                                    style={styles.inputNumero}
-                                    keyboardType="numeric"
-                                    onChangeText={(value) => {
-                                        valorInput = value;
-                                    }}
-                                    onBlur={() => {
-                                        setContador(parseInt(valorInput, 10) || contador);
-                                    }}
-                                />
-                                <Text style={{ fontSize: 18, marginTop: 15, color: '#282828' }}>dls</Text>
-                            </View>
-                            <TouchableOpacity
-                               onPress={handlePress}
-                                style={[styles.botonesInput, styles.botonMas]}>
-                                <Text style={[styles.buttonText, { color: '#fff' }]}>+</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <TouchableOpacity
-                            isdisabled={isLoaded}
-                            onPress={() => { onPressPaypal() }}
-                            style={{ margin: 5, padding: 10, backgroundColor: 'rgb(212,46,46)', borderRadius: 8, width: '100%', marginTop: 60 }}>
-                            {
-                                isLoaded
-                                    ?
-                                    <Loader />
-                                    :
-                                    <Text style={{ color: 'white', textAlign: 'center', fontSize: 22, fontFamily: defaultStyle.fontGeneral.fontFamily }}>{ingles ? 'ACCEPT!' : '¡ACEPTAR!'}</Text>
-                            }
-                        </TouchableOpacity>
+                        </TouchableOpacity>                  
                     </ScrollView>
                 </LinearGradient>
             </ImageBackground>
@@ -348,6 +235,13 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center'
+    },
+    Logo:{
+        width:150,
+        height:100,
+        alignContent:"center",
+        justifyContent: 'center',
+        marginLeft:75
     },
     backgroundImageContainer: {
         height: '100%',
@@ -421,7 +315,10 @@ const styles = StyleSheet.create({
     },
     textoNormal: {
         fontSize: 20,
-        color: '#001d38'
+        color: '#001d38',
+        textAlign:'center',
+        fontWeight: '600',
+
     },
     estrellaLlena: {
         color: '#ff9933',

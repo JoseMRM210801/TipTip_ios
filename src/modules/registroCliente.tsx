@@ -14,3 +14,12 @@ export let clientSchemaValidationEn = object({
     email: string().email("The email is not valid").required("The email is required"),
     contrasenia: string().required("The password is required").min(8, "The password must have at least 8 characters")
 })
+
+export let clientContraRepeEn=object({
+    contrasenia: string().required("The password is not the same"),
+    contrasenia2: string().required("The password is not the same")
+})
+export let clientContraRepe=object({
+    contrasenia: string().required("La contraseña no es la misma"),
+    contrasenia2: string().required("La contraseña no es la misma")
+})

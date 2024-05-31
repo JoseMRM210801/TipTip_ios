@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, Image, StyleSheet, Text, TextInput, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Image, StyleSheet, Text, TextInput, TouchableOpacity, ScrollView, Modal } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { defaultStyle } from '../Theme/Theme';
 import RNPickerSelect from 'react-native-picker-select';
@@ -14,39 +14,48 @@ import SvgFlecha from '../Admin/SvgFlecha';
 export const RegistroProveedor = () => {
     const fondo: any = require("../../assets/Fondo-Tiptip-01.jpg");
     const logo: any = require("../../assets/Logo-Tiptip-02.png");
+    const ojo: any = require("../../assets/ojo.png");
+    const ojoc: any = require("../../assets/ojoc.png");
     const [focus, setFocus] = useState("");
     const contexto = useContext(AppContext);
     const [ingles, setIngles] = useState(contexto.usuario.English);
+    const [showPassword, setShowPassword] = useState(false); 
+    const [showModal, setShowModal] = useState(false);
+    const [repeatPassword, setRepeatPassword] = useState('');
+
     useEffect(() => {
         setIngles(contexto.usuario.English);
-    }, [contexto.usuario.English])
+    }, [contexto.usuario.English]);
+
     const isIOS = DeviceInfo.getSystemName() === 'iOS';
     const navigate = useNavigation();
+
     const handleFocus = (nombreInput: string) => {
         setFocus(nombreInput);
     }
+
     const idiomaSpanol = {
         saludo: "Registrate aquí en segundos",
         peticion: 'Estas a punto de registrarte como proveedor de servicios.',
         btn: 'Iniciar',
-        servicio: '¿Qué servicio ofreces?'
-
+        servicio: '¿Qué servicio ofreces?',
+        contrasenasNoIguales: 'Las contraseñas no son iguales'
     }
 
     const idiomaIngles = {
         saludo: "Register here in seconds",
-        peticion: 'Please fill in your personal information only this time.',
+        peticion: 'Please fill out the information only this time.',
         btn: 'Start',
-        servicio:'what service do you offer?'
+        servicio: 'what service do you offer?',
+        contrasenasNoIguales: 'Passwords do not match'
     };
+
     const [ciudades, setCiudades] = useState([]);
     const [estados, setEstados] = useState([]);
     const [selectedEstado, setSelectedEstado] = useState('');
-    const insertarRepartidor = async (nuevoRepartidor: IDelivery) => {
 
-        //fetch('http://192.168.1.72:8090/api/delivery/signin', {
-          //  fetch('https://127.0.0.1/api/delivery/signin', {
-            fetch('https://bett-production.up.railway.app/api/delivery/signin', {
+    const insertarRepartidor = async (nuevoRepartidor: IDelivery) => {
+        fetch('https://bett-production.up.railway.app/api/delivery/signin', {
             method: 'POST',
             mode: 'cors',
             headers: {
@@ -54,50 +63,47 @@ export const RegistroProveedor = () => {
             },
             body: JSON.stringify(nuevoRepartidor)
         })
-            .then(res => { return res.json() })
-            .then(data => {
-                navigate.navigate("Credenciales" as never)
-                //guardar en localStorage para permanencia de credencial
-                contexto.setUsuario(data);
-            }).catch(error => console.error('Error:', error))
+        .then(res => res.json())
+        .then(data => {
+            navigate.navigate("Credenciales" as never);
+            contexto.setUsuario(data);
+        })
+        .catch(error => console.error('Error:', error));
     }
 
     useEffect(() => {
-        // Fetch para obtener la lista de estados
         fetch('https://parseapi.back4app.com/classes/Usabystate_States?keys=name,postalAbreviation', {
             headers: {
                 'X-Parse-Application-Id': '5bV2naG0lkGPhWU3Dewaem9CgMsViox5S8t7gv2q',
                 'X-Parse-REST-API-Key': '9G3Cn1iMtA284ZWRvUoBywDZBE99eGqOni4bi8vO',
             },
         })
-            .then(response => { return response.json() })
-            .then(data => {
-                setEstados(data.results.map((estado: { name: any; postalAbreviation: any; }) => ({
-                    label: estado.name,
-                    value: estado.postalAbreviation,
-                })));
-            })
-            .catch(error => console.error('Error fetching estados:', error));
+        .then(response => response.json())
+        .then(data => {
+            setEstados(data.results.map((estado: { name: any; postalAbreviation: any; }) => ({
+                label: estado.name,
+                value: estado.postalAbreviation,
+            })));
+        })
+        .catch(error => console.error('Error fetching estados:', error));
     }, []);
 
     useEffect(() => {
-        // Verificar que se haya seleccionado un estado antes de hacer el fetch
         if (selectedEstado) {
-            // Fetch para obtener la lista de ciudades basada en el estado seleccionado
             fetch(`https://parseapi.back4app.com/classes/Usabystate_${selectedEstado}?keys=name`, {
                 headers: {
                     'X-Parse-Application-Id': '5bV2naG0lkGPhWU3Dewaem9CgMsViox5S8t7gv2q',
                     'X-Parse-REST-API-Key': '9G3Cn1iMtA284ZWRvUoBywDZBE99eGqOni4bi8vO',
                 },
             })
-                .then(response => { return response.json() })
-                .then(data => {
-                    setCiudades(data.results.map((ciudad: { name: any; }) => ({
-                        label: ciudad.name,
-                        value: ciudad.name,  // Actualiza esto con el campo correcto que debería usarse como valor
-                    })));
-                })
-                .catch(error => console.error('Error fetching ciudades:', error));
+            .then(response => response.json())
+            .then(data => {
+                setCiudades(data.results.map((ciudad: { name: any; }) => ({
+                    label: ciudad.name,
+                    value: ciudad.name,
+                })));
+            })
+            .catch(error => console.error('Error fetching ciudades:', error));
         }
     }, [selectedEstado]);
 
@@ -114,8 +120,8 @@ export const RegistroProveedor = () => {
                     <SvgFlecha />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => {
-                    setIngles(!ingles)
-                    contexto.setUsuario({ ...contexto.usuario, English: !ingles })
+                    setIngles(!ingles);
+                    contexto.setUsuario({ ...contexto.usuario, English: !ingles });
                 }}>
                     <Text style={styles.textoOpciones}>{ingles ? 'Es' : 'En'}</Text>
                 </TouchableOpacity>
@@ -124,7 +130,6 @@ export const RegistroProveedor = () => {
                 </TouchableOpacity>
             </View>
             <Formik
-
                 initialValues={{
                     nombre: '',
                     apellido: '',
@@ -137,11 +142,13 @@ export const RegistroProveedor = () => {
                     contrasenia: '',
                     servicio: '',
                     ocupacion: '',
-
                 }}
                 validationSchema={ingles ? deliverySchemaValidationEn : deliverySchemaValidation}
                 onSubmit={(values) => {
-
+                    if (values.contrasenia !== repeatPassword) {
+                        setShowModal(true);
+                        return;
+                    }
                     let repartidor: IDelivery = {
                         Name: values.nombre,
                         LastName: values.apellido,
@@ -177,7 +184,7 @@ export const RegistroProveedor = () => {
                                 onChangeText={handleChange('nombre')}
                                 onBlur={handleBlur('nombre')}
                                 value={values.nombre}
-                            ></TextInput>
+                            />
                             {errors.nombre && touched.nombre && <Text style={{ color: 'red' }}>{errors.nombre}</Text>}
                             <TextInput
                                 style={[styles.input, focus === 'input2' && styles.textInputFocused]}
@@ -187,9 +194,8 @@ export const RegistroProveedor = () => {
                                 onChangeText={handleChange('apellido')}
                                 onBlur={handleBlur('apellido')}
                                 value={values.apellido}
-                            ></TextInput>
+                            />
                             {errors.apellido && touched.apellido && <Text style={{ color: 'red' }}>{errors.apellido}</Text>}
-
                             <TextInput
                                 style={[styles.input, focus === 'input3' && styles.textInputFocused]}
                                 placeholder={ingles ? 'Email' : 'Correo electrónico'}
@@ -199,9 +205,8 @@ export const RegistroProveedor = () => {
                                 onBlur={handleBlur('email')}
                                 value={values.email}
                                 keyboardType="email-address"
-                            ></TextInput>
+                            />
                             {errors.email && touched.email && <Text style={{ color: 'red' }}>{errors.email}</Text>}
-
                             <TextInput
                                 style={[styles.input, focus === 'input4' && styles.textInputFocused]}
                                 placeholder={ingles ? 'Bank' : 'Banco'}
@@ -210,7 +215,7 @@ export const RegistroProveedor = () => {
                                 onChangeText={handleChange('banco')}
                                 onBlur={handleBlur('banco')}
                                 value={values.banco}
-                            ></TextInput>
+                            />
                             <TextInput
                                 style={[styles.input, focus === 'input5' && styles.textInputFocused]}
                                 placeholder={ingles ? 'Account type' : 'Tipo de cuenta'}
@@ -219,7 +224,7 @@ export const RegistroProveedor = () => {
                                 onChangeText={handleChange('tipocuenta')}
                                 onBlur={handleBlur('tipocuenta')}
                                 value={values.tipocuenta}
-                            ></TextInput>
+                            />
                             <TextInput
                                 style={[styles.input, focus === 'input6' && styles.textInputFocused]}
                                 placeholder={ingles ? 'Account number' : 'Número de cuenta'}
@@ -229,8 +234,7 @@ export const RegistroProveedor = () => {
                                 onBlur={handleBlur('nocuenta')}
                                 value={values.nocuenta}
                                 keyboardType="number-pad"
-                            ></TextInput>
-
+                            />
                             <View style={styles.inputSeleccion}>
                                 <RNPickerSelect
                                     onValueChange={(value) => {
@@ -252,9 +256,9 @@ export const RegistroProveedor = () => {
                                         inputIOS: {
                                             fontSize: 16,
                                             color: '#303030',
-                                            height: '100%',
+                                            backgroundColor: '#fff',
                                             padding: 10,
-                                            backgroundColor: '#fff'
+                                            height: '100%',
                                         },
                                     }}
                                 />
@@ -284,18 +288,16 @@ export const RegistroProveedor = () => {
                                     }}
                                 />
                             </View>
-
                             <TextInput
-                                style={[styles.input, focus === 'input6' && styles.textInputFocused]}
+                                style={[styles.input, focus === 'input7' && styles.textInputFocused]}
                                 placeholder={ingles ? 'Occupation' : 'Ocupación'}
-                                onFocus={() => { handleFocus('input6') }}
+                                onFocus={() => { handleFocus('input7') }}
                                 onChangeText={handleChange('ocupacion')}
                                 onBlur={handleBlur('ocupacion')}
                                 value={values.ocupacion}
                                 placeholderTextColor="#282828"
-                            ></TextInput>
+                            />
                             {errors.ocupacion && touched.ocupacion && values.ocupacion == '' && <Text style={{ color: 'red' }}>{errors.ocupacion}</Text>}
-
                             <Text style={styles.textoServicio}> {ingles ? idiomaIngles.servicio : idiomaSpanol.servicio}</Text>
                             <View style={styles.inputSeleccion}>
                                 <RNPickerSelect
@@ -307,14 +309,14 @@ export const RegistroProveedor = () => {
                                         { label: 'DHL', value: '4' },
                                         { label: 'USPS', value: '5' },
                                         { label: 'Fedex', value: '6' },
-                                        {label:'Fedex Express', value:'7'},
-                                        {label:'Fedex Ground', value:'8'},
-                                        {label:'Fedex Home', value:'9'},
-                                        {label:'Fedex Overnight', value:'10'},
-                                        {label:'General Carrier', value:'11'},
-                                        {label:'Lasership', value:'12'},
-                                        {label:'On Track', value:'13'},
-                                        {label:'Other', value:'14'},
+                                        { label: 'Fedex Express', value: '7' },
+                                        { label: 'Fedex Ground', value: '8' },
+                                        { label: 'Fedex Home', value: '9' },
+                                        { label: 'Fedex Overnight', value: '10' },
+                                        { label: 'General Carrier', value: '11' },
+                                        { label: 'Lasership', value: '12' },
+                                        { label: 'On Track', value: '13' },
+                                        { label: 'Other', value: '14' },
                                     ]}
                                     placeholder={{
                                         label: 'Driver delivery',
@@ -338,18 +340,34 @@ export const RegistroProveedor = () => {
                                 />
                             </View>
                             {errors.servicio && touched.servicio && <Text style={{ color: 'red' }}>{errors.servicio}</Text>}
-                            <TextInput
-                                style={[styles.input, focus === 'input7' && styles.textInputFocused]}
-                                onFocus={() => { handleFocus('input7') }}
-                                placeholder={ingles ? 'Password' : 'Contraseña'}
-                                placeholderTextColor="#282828"
-                                onChangeText={handleChange('contrasenia')}
-                                onBlur={handleBlur('contrasenia')}
-                                value={values.contrasenia}
-                                keyboardType="default"
-                                secureTextEntry
-                            />
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <TextInput
+                                    style={[styles.input, focus === 'input8' && styles.textInputFocused, { flex: 1 }]}
+                                    onFocus={() => { handleFocus('input8') }}
+                                    placeholder={ingles ? 'Password' : 'Contraseña'}
+                                    placeholderTextColor="#282828"
+                                    onChangeText={handleChange('contrasenia')}
+                                    onBlur={handleBlur('contrasenia')}
+                                    value={values.contrasenia}
+                                    keyboardType="default"
+                                    secureTextEntry={!showPassword}
+                                />
+                                <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={{ marginLeft: 10 }}>
+                                    <Image source={showPassword ? ojoc : ojo} alt="ojo" style={styles.ojo} />
+                                </TouchableOpacity>
+                            </View>
                             {errors.contrasenia && touched.contrasenia && <Text style={{ color: 'red' }}>{errors.contrasenia}</Text>}
+                            <TextInput
+                                style={[styles.input, focus === 'input9' && styles.textInputFocused]}
+                                onFocus={() => { handleFocus('input9') }}
+                                placeholder={ingles ? 'Repeat Password' : 'Repetir Contraseña'}
+                                placeholderTextColor="#282828"
+                                onChangeText={(text) => setRepeatPassword(text)}
+                                onBlur={() => handleFocus('')}
+                                value={repeatPassword}
+                                keyboardType="default"
+                                secureTextEntry={!showPassword}
+                            />
                         </ScrollView>
                         <TouchableOpacity
                             onPress={() => { handleSubmit(); }}
@@ -360,9 +378,25 @@ export const RegistroProveedor = () => {
                         </TouchableOpacity>
                     </LinearGradient>
                 )}
-
             </Formik>
-
+            <Modal
+                transparent={true}
+                visible={showModal}
+                animationType="slide"
+                onRequestClose={() => setShowModal(false)}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalText}>{ingles ? idiomaIngles.contrasenasNoIguales : idiomaSpanol.contrasenasNoIguales}</Text>
+                        <TouchableOpacity
+                            style={styles.modalButton}
+                            onPress={() => setShowModal(false)}
+                        >
+                            <Text style={styles.modalButtonText}>OK</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 };
@@ -406,11 +440,14 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignContent: 'center',
-
     },
     ScrollView: {
         width: '90%',
         height: '100%'
+    },
+    ojo:{
+        height: 25,
+        width: 25,
     },
     textoSaludo: {
         color: '#fff',
@@ -428,8 +465,8 @@ const styles = StyleSheet.create({
     },
     tuInfo: {
         fontSize: 18,
-        textAlign: 'left',
-        width: '95%',
+        textAlign: 'center',
+        width: '80%',
         color: '#001d38',
         paddingBottom: 9,
         paddingLeft: 30,
@@ -504,5 +541,33 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         marginTop: 4,
         borderRadius: 4
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0,0,0,0.5)',
+    },
+    modalContent: {
+        width: '80%',
+        padding: 20,
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        alignItems: 'center',
+    },
+    modalText: {
+        fontSize: 18,
+        marginBottom: 15,
+    },
+    modalButton: {
+        padding: 10,
+        backgroundColor: 'rgb(212,46,46)',
+        borderRadius: 8,
+        width: '50%',
+        alignItems: 'center',
+    },
+    modalButtonText: {
+        color: 'white',
+        fontSize: 16,
     },
 });

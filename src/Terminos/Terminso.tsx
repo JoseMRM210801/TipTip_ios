@@ -7,6 +7,7 @@ import { Usuario } from "../Modelos/Usuario";
 import DeviceInfo from "react-native-device-info";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ScrollView } from "react-native-gesture-handler";
+import SvgFlecha from '../Admin/SvgFlecha';
 
 export const TerminosyCondiciones = () => {
     const fondo: any = require("../../assets/Fondo-Tiptip-01.jpg");
@@ -53,6 +54,15 @@ export const TerminosyCondiciones = () => {
         CondicionDeUso5:'5. Usted acepta no utilizar Tip Tip para enviar contenido o mensajes que sean difamatorios, obscenos, ofensivos, discriminatorios o que violen los derechos de terceros.',
         CondicionDeUso6:'6. Nos reservamos el derecho de suspender o cancelar su acceso a Tip Tip en cualquier momento y por cualquier motivo, incluida la violación de estas Condiciones de Uso.',
         CondicionDeUso7:'Al utilizar nuestra aplicación, usted acepta cumplir con estas Condiciones de Uso.',
+        Comisionytarifas:"Comisión y Tarifas",
+        ComisionP:"La comisión por el uso de la app solo se cobra a los deliveries o prestadores del servicio que efectivamente reciban propinas. No tiene ningún costo el instalar la app como tampoco el registrarse.",
+        ComisionP2:"La comisión de la app Tiptip comienza a cobrarse después que el delivery o prestador del servicio alcance los primeros $20 dólares de la semana (de acuerdo al corte, es decir la semana o conteo inicia los martes), comisión que será de $1 dólar por cada $20 dólares o fracción de este monto. Se tiene un día de inicio y un día de corte del conteo. El día de inicio es el martes a las 00:00 horas y el día del corte es el día lunes de la siguiente semana a las 23:59:59.",
+        ComisionP3:"El día que se realiza el giro o transferencia a los deliveries o prestadores del servicio es el día viernes de cada semana a la cuenta registrada en la app, es responsabilidad exclusiva del delivery o prestador del servicio registrar correctamente los datos de la cuenta y el banco. Todos los depósitos se harán exclusivamente en la cuenta bancaria, no se expedirá cheque ni se dará dinero en efectivo.",
+        ComisionP4:"La plataforma de pago paypal es el canal que usa la app TipTip para que los clientes realicen la transacción de la propina. Por cuestiones de política de los sistemas operativos se debe usar un canal reconocido. Paypal cobra una comisión por transacción del 2.9% y una tarifa fija por transacción de $0.30 dólares. Esos cobros dependen exclusivamente de la plataforma PayPal y ellos los pueden cambiar sin previo aviso, sin que la app Tiptip tenga injerencia o responsabilidad alguna en ello.",
+        PagoTitulo:"Pago",
+        Pago:"El pago corresponde al valor total individual que cada delivery o prestador del servicio registro en el sistema realizado por parte de los compradores, el cual se consigna los días viernes de cada semana, previos los descuentos y comisiones indicadas en el acápite de comisiones y tarifas.",
+        Pago2:"Se lleva un registro exacto individual en el sistema el cual indica a cual QR pertenece la propina que se hizo y el delivery o prestador del servicio al que pertenece ese QR.",
+        Pago3:"La app enviara una notificación al beneficiario de la propina de manera inmediata la cual será pagada, previos los descuentos y comisiones indicados el día viernes de cada semana.",
         Agradecimiento:'Gracias por utilizar Tip Tip y por confiar en nosotros para sus transacciones de propinas.',
         salir: 'Salir',
         
@@ -130,6 +140,11 @@ export const TerminosyCondiciones = () => {
                 <Image source={fondo} alt="Fondo Tip tip" style={styles.backgroundImage} />
             </View>
             <View style={[styles.contenedorOpciones, (isIOS ? { marginTop: 43 } : {})]}>
+            <TouchableOpacity
+                    onPress={() => { navigate.goBack(); }}
+                    style={[styles.textoOpcionesF, styles.flecha]}>
+                    <SvgFlecha />
+                </TouchableOpacity>
                 <TouchableOpacity
                     onPress={() => { Salir() }}
                 >

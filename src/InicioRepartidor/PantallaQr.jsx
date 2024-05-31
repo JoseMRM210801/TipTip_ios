@@ -276,8 +276,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         marginTop: 4,
         borderRadius: 4
-    },
-    
+    }, 
     containerInfo: {
         position: 'absolute',
         top: '22%',

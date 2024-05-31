@@ -3,6 +3,7 @@ import React, { useState, useContext, useEffect } from 'react'
 import { Text, Pressable, ImageBackground, StyleSheet, View, Platform, TouchableOpacity } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient';
 import SvgSi from './SvgSi';
+import SvgYes from './SvgYes';
 import SvgFlecha from '../Admin/SvgFlecha';
 import SvgQr from './SvgQr';
 import DeviceInfo from 'react-native-device-info';
@@ -100,18 +101,22 @@ export const PantallaScanner = () => {
                             style={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center' }}
                             onPress={() => { navigate.navigate('LectorQR') }}
                         >
-                            <SvgSi fill={'rgb(212,46,46)'} />
+                              {ingles ? (
+                                      <SvgYes fill={'rgb(212,46,46)'} />
+                                ) : (
+                                      <SvgSi fill={'rgb(212,46,46)'} />
+                                )}                            
                         </Pressable>
                     </View>
                     <Text style={{ marginTop: 25, color: '#282828' }}>{ingles ? idiomaIngles.pie : idiomaSpanol.pie}</Text>
                 </LinearGradient>
-
+ 
 
             </ImageBackground>
 
         </View>
     )
-}
+} 
 const styles = StyleSheet.create({
     centrado: {
         flex: 1,

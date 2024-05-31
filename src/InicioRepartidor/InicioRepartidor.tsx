@@ -73,7 +73,8 @@ export const InicioRepartidor = () => {
         boton: 'Genera QR',
         iconoCuenta: 'Mi cuenta',
         iconoDatos: "Editar datos",
-        botonDos: 'Dar propina'
+        botonDos: 'Dar propina',
+        botonTres: "Probar QR"
     }
     const idiomaIngles = {
         salir: 'Exit',
@@ -82,7 +83,8 @@ export const InicioRepartidor = () => {
         boton: 'Generate QR',
         iconoCuenta: 'My account',
         iconoDatos: 'Edit data',
-        botonDos: 'Give tip'
+        botonDos: 'Give tip',
+        botonTres: 'Try QR', 
     };
     const salir = async () => {
         const limpiarUsuario: Usuario = {
@@ -192,8 +194,13 @@ export const InicioRepartidor = () => {
                     </View>
                     <TouchableOpacity
                         onPress={() => { navigate.navigate('LectorQR' as never) }}
-                        style={{ margin: 5, padding: 10, backgroundColor: '#df662e', borderRadius: 8, width: '90%', marginTop: 25, marginBottom: 30 }}>
+                        style={{ margin: 5, padding: 10, backgroundColor: '#df662e', borderRadius: 8, width: '90%', marginTop: 25, marginBottom: 20 }}>
                         <Text style={{ color: 'white', textAlign: 'center', fontSize: 22, fontFamily: defaultStyle.fontGeneral.fontFamily }}>{ingles ? idiomaIngles.botonDos : idiomaSpanol.botonDos}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => { navigate.navigate('LectorQRPrueba' as never) }}
+                        style={{ margin: 5, padding: 10, backgroundColor: '#df662e', borderRadius: 8, width: '90%', marginBottom: 30 }}>
+                        <Text style={{ color: 'white', textAlign: 'center', fontSize: 22, fontFamily: defaultStyle.fontGeneral.fontFamily }}>{ingles ? idiomaIngles.botonTres : idiomaSpanol.botonTres}</Text>
                     </TouchableOpacity>
                 </ScrollView>
             </LinearGradient>

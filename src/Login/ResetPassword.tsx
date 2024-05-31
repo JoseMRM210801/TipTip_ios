@@ -163,10 +163,12 @@ export const ResetPassword = () => {
                                 <View style={styles.inputSeleccion}>
                                     <RNPickerSelect
                                         onValueChange={handleChange('servicio')}
-                                        items={[
+                                        items={ingles ? [
                                             { label: "User", value: '1' },
                                             { label: "Delivery", value: '2' },
-
+                                        ] : [
+                                            { label: "Usuario", value: '1' },
+                                            { label: "Repartidor", value: '2' },
                                         ]}
                                         placeholder={{
                                             label: "Select an option",

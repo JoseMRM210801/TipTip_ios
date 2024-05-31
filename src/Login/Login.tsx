@@ -25,13 +25,13 @@ export const Login = () => {
         textoPrincipal: '¡Propinas al instante!',
         botonIngresar: "Ingresa",
         botonRegistrate: "Registrate",
-        pie: "Con Tip tip puede dar y recibir propinas en cualquier momento y de manera sencilla."
+        pie: "Con TipTip puedes dar y recibir propinas de forma rapida y sencilla."
     }
     const idiomaIngles = {
         textoPrincipal: "Instant Tips!",
         botonIngresar: "Log In",
         botonRegistrate: "Sign Up",
-        pie: "With Tip tip, you can give and receive tips at any time and in a simple way."
+        pie: "With TipTip you can give and receive tips quickly and easily."
 
     };
     const Login = async (correo: string, pass: string) => {
@@ -147,7 +147,7 @@ export const Login = () => {
                         </TouchableOpacity>
                     </View>
                 </View>
-                <Text style={styles.textBottom}>
+                <Text style={styles.textBottomp}>
                     {ingles ? idiomaIngles.pie : idiomaSpanol.pie}
                 </Text>
             </ImageBackground>
@@ -188,6 +188,16 @@ const styles = StyleSheet.create({
         bottom: 0,
         padding: 10,
         fontSize: 16,
+        color: '#282828',
+        fontFamily: defaultStyle.fontGeneral.fontFamily
+    },    
+    textBottomp: {
+        marginTop: 10,
+        textAlign: 'center',
+        position: 'absolute',
+        bottom: 0,
+        padding: 10,
+        fontSize: 13,
         color: '#282828',
         fontFamily: defaultStyle.fontGeneral.fontFamily
     },
