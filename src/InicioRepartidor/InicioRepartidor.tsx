@@ -23,8 +23,9 @@ export const InicioRepartidor = () => {
     const contexto = useContext(AppContext);
     const [ingles, setIngles] = useState(contexto.usuario.English);
     const [notificaciones, setNotificaciones] = useState(false);
+    
     useEffect(() => {
-        setIngles(contexto.usuario.English);
+        setIngles(ingles);
     }, [contexto.usuario.English])
     useEffect(() => { }, [contexto.usuario.Notification])
     useFocusEffect(

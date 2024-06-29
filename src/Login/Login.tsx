@@ -19,6 +19,7 @@ export const Login = () => {
     const [loader, setLoader] = useState(false);
     const isIOS = DeviceInfo.getSystemName() === 'iOS';
     useEffect(() => {
+        console.log(contexto.usuario.English)
         loadLogin();
     }, []);
     const idiomaSpanol = {
@@ -101,6 +102,7 @@ export const Login = () => {
     }
     const navigate = useNavigation();
     const simulacion = async () => {
+        console.log(contexto.usuario.English)
         navigate.navigate('Credenciales' as never);
     }
     if (loader) {

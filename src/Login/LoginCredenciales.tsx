@@ -16,6 +16,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export const LoginCredenciales = () => {
     const fondo: any = require("../../assets/Fondo-Tiptip-01.jpg");
     const logo: any = require("../../assets/Logo-Tiptip-02.png");
+    const ojo: any = require("../../assets/ojo.png");
     const navigate = useNavigation();
     const [focus, setFocus] = useState("");
     const isIOS = DeviceInfo.getSystemName() === 'iOS';
@@ -26,9 +27,11 @@ export const LoginCredenciales = () => {
     const [error, setError] = useState(false);
     const [ingles, setIngles] = useState(contexto.usuario.English);
     const [modalVisible2, setModalVisible2] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     useEffect(() => {
-        setIngles(contexto.usuario.English);
+        setIngles(ingles);
     }, [contexto.usuario.English])
+
     const [modalVisible, setModalVisible] = useState(false);
 
     const guardarLogin = async (email: string, password: string) => {
@@ -62,6 +65,7 @@ export const LoginCredenciales = () => {
             Bank: "",
             Account: "",
             AccNumber: "",
+            English: contexto.usuario.English
         }
 
         //fetch('http://192.168.1.72:8090/api/login', {
@@ -96,10 +100,17 @@ export const LoginCredenciales = () => {
                 if (data.Role_Id != null) {
                     setIsLoad(true);
                     console.log(data)
-                    contexto.setUsuario(data);
+                    const usuarioIngles = {
+                        ...data,
+                        English: ingles
+                    }
+                    contexto.setUsuario(usuarioIngles);
+                    console.log("PINCHE LOGIN")
+                    console.log(contexto.usuario)
                     guardarLogin(correo, pass);
                     if (data.Role_Id == "1") {
                         navigate.navigate("InicioCliente" as never);
+                        console.log("wachaperro" + contexto.usuario.English)
                     } else if (data.Role_Id == "2") {
                         navigate.navigate("InicioRepartidor" as never);
                     } else if (data.Role_Id == "3") {
@@ -177,6 +188,7 @@ export const LoginCredenciales = () => {
                         onSubmit={(values) => {
                             Login(values.email, values.contrasenia);
                             guardarLogin(values.email, values.contrasenia);
+                            console.log("Contexto al presionar boton:" + contexto.usuario.English)
                         }}
                     >
                         {({ handleChange, handleBlur, handleSubmit, values, errors, touched, isSubmitting }) => (
@@ -194,18 +206,24 @@ export const LoginCredenciales = () => {
                                     ref={refEmail}
                                 />
                                 {errors.email && touched.email && <Text style={{ color: 'red' }}>{errors.email}</Text>}
-                                <TextInput
-                                    style={[styles.input, focus === 'input2' && styles.textInputFocused]}
-                                    onFocus={() => { handleFocus('input2') }}
-                                    placeholder={ingles ? idiomaIngles.contrasenia : idiomaSpanol.contrasenia}
-                                    placeholderTextColor="#282828"
-                                    onChangeText={handleChange('contrasenia')}
-                                    onBlur={handleBlur('contrasenia')}
-                                    value={values.contrasenia}
-                                    keyboardType="default"
-                                    secureTextEntry
-                                    ref={refContrasenia}
-                                />
+
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <TextInput
+                                        style={[styles.input, focus === 'input2' && styles.textInputFocused, { flex: 1 }]}
+                                        onFocus={() => { handleFocus('input2') }}
+                                        placeholder={ingles ? 'Password' : 'Contraseña'}
+                                        placeholderTextColor="#282828"
+                                        onChangeText={handleChange('contrasenia')}
+                                        onBlur={handleBlur('contrasenia')}
+                                        value={values.contrasenia}
+                                        keyboardType="default"
+                                        secureTextEntry={!showPassword}
+                                        ref={refContrasenia}
+                                    />
+                                    <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={{ marginLeft: 10 }}>
+                                        <Image source={ojo} alt="ojo" style={styles.ojo} />
+                                    </TouchableOpacity>
+                                </View>
                                 {errors.contrasenia && touched.contrasenia && <Text style={{ color: 'red' }}>{errors.contrasenia}</Text>}
                                 {
                                     error && <Text style={{ color: 'red' }}>{ingles ? idiomaIngles.error : idiomaSpanol.error}</Text>
@@ -292,6 +310,10 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         width: '100%',
         paddingRight: 20
+    },
+    ojo: {
+        height: 25,
+        width: 25,
     },
     textoOpciones: {
         color: 'rgb(212,46,46)',

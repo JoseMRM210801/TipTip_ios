@@ -1,26 +1,34 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, Image, StyleSheet, Text, TextInput, Platform, Pressable, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Image, StyleSheet, Text, TextInput, Platform, Pressable, TouchableOpacity, ScrollView, KeyboardAvoidingView } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { defaultStyle } from '../Theme/Theme';
 import RNPickerSelect from 'react-native-picker-select';
 import { AppContext } from '../Contexto/AppContext';
-import { Formik } from 'formik';
+import { Formik, Field, Form } from 'formik';
 import { clientSchemaValidation, clientSchemaValidationEn } from '../modules/registroCliente';
 import SvgFlecha from '../Admin/SvgFlecha';
 import { Usuario } from '../Modelos/Usuario';
 import { useNavigation } from '@react-navigation/native';
 import DeviceInfo from 'react-native-device-info';
+import { IEstados } from '../Modelos/Estados';
+import { CustomSelect } from '../modules/personalizedComponent.tsx'
+import { ICiudades } from '../Modelos/Ciudades';
 
 export const DatosCliente = () => {
     const fondo: any = require("../../assets/Fondo-Tiptip-01.jpg");
     const logo: any = require("../../assets/Logo-Tiptip-02.png");
+    const ojo: any = require("../../assets/ojo.png");
     const [focus, setFocus] = useState("");
     const contexto = useContext(AppContext);
-    const [ciudades, setCiudades] = useState([]);
-    const [estados, setEstados] = useState([]);
+    const [ciudades, setCiudades] = useState<any[]>([]);
+    const [estados, setEstados] = useState<any[]>([]);
     const [selectedEstado, setSelectedEstado] = useState('');
+    const [selectedCiudad, setSelectedCiudad] = useState('');
     const navigate = useNavigation();
     const [ingles, setIngles] = useState(contexto.usuario.English);
+    const [showPassword, setShowPassword] = useState(false);
+    const [repeatPassword, setRepeatPassword] = useState('');
+    
     useEffect(() => {
         setIngles(contexto.usuario.English);
     }, [contexto.usuario.English])
@@ -77,45 +85,91 @@ export const DatosCliente = () => {
             })
     }
 
+    interface Item {
+        Name: string;
+        Id: string;
+    }
+
+    const getStates = async () => {
+        try {
+            const response = await fetch('http://192.168.1.43:8090/api/states', {
+                method: 'GET',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            });
+
+            const data: IEstados[] = await response.json();
+
+            console.log(data)
+
+            const estadosItems: Item[] = data.map((estado) => ({ // Utiliza IEstados aquí también
+                Name: estado.Name,
+                Id: estado.Id ? estado.Id.toString() : ''
+            }));
+
+            setEstados(estadosItems);
+        } catch (error) {
+            console.error('Error fetching estados:', error);
+        }
+    };
+
     useEffect(() => {
-        // Fetch para obtener la lista de estados
-        fetch('https://parseapi.back4app.com/classes/Usabystate_States?keys=name,postalAbreviation', {
-            headers: {
-                'X-Parse-Application-Id': '5bV2naG0lkGPhWU3Dewaem9CgMsViox5S8t7gv2q',
-                'X-Parse-REST-API-Key': '9G3Cn1iMtA284ZWRvUoBywDZBE99eGqOni4bi8vO',
-            },
-        })
-            .then(response => { return response.json() })
-            .then(data => {
-                setEstados(data.results.map((estado: { name: any; postalAbreviation: any; }) => ({
-                    label: estado.name,
-                    value: estado.postalAbreviation,
-                })));
-            })
-            .catch(error => console.error('Error fetching estados:', error));
+        getStates();
     }, []);
 
+    interface ItemCiudades {
+        Name: string;
+        Id: string;
+    }
+
+    const getCities = async () => {
+        try {
+            if (selectedEstado) {
+                const response = await fetch(`http://192.168.1.43:8090/api/city/${selectedEstado}`, {
+                    method: 'GET',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                });
+    
+                const data: IEstados[] = await response.json();
+
+                console.log(selectedCiudad)
+    
+                console.log(data)
+    
+                const ciudadesItems: ItemCiudades[] = data.map((ciudad) => ({ // Utiliza IEstados aquí también
+                    Name: ciudad.Name,
+                    Id: ciudad.Id ? ciudad.Id.toString() : ''
+                }));
+    
+                setCiudades(ciudadesItems);
+            } 
+        }catch (error) {
+                console.error('Error fetching estados:', error);
+            }
+    }
+
     useEffect(() => {
-        // Verificar que se haya seleccionado un estado antes de hacer el fetch
-        if (selectedEstado) {
-            // Fetch para obtener la lista de ciudades basada en el estado seleccionado
-            fetch(`https://parseapi.back4app.com/classes/Usabystate_${selectedEstado}?keys=name`, {
-                headers: {
-                    'X-Parse-Application-Id': '5bV2naG0lkGPhWU3Dewaem9CgMsViox5S8t7gv2q',
-                    'X-Parse-REST-API-Key': '9G3Cn1iMtA284ZWRvUoBywDZBE99eGqOni4bi8vO',
-                },
-            })
-                .then(response => { return response.json() })
-                .then(data => {
-                    setCiudades(data.results.map((ciudad: { name: any; }) => ({
-                        label: ciudad.name,
-                        value: ciudad.name,  // Actualiza esto con el campo correcto que debería usarse como valor
-                    })));
-                })
-                .catch(error => console.error('Error fetching ciudades:', error));
-        }
+        getCities();
     }, [selectedEstado]);
 
+
+
+    const Item = ({ Name }: IEstados) => (
+        <View style={styles.item}>
+            <Text style={styles.title}>{Name}</Text>
+        </View>
+    );
+
+    const ItemCiudad = ({ Name }: ICiudades) => (
+        <View style={styles.item}>
+            <Text style={styles.title}>{Name}</Text>
+        </View>
+    );
 
     return (
         <View style={styles.container}>
@@ -164,7 +218,7 @@ export const DatosCliente = () => {
                     ActualizarUsuario(actualizacion);
                 }}
             >
-                {({ handleChange, handleBlur, handleSubmit, values, errors, touched, isSubmitting }) => (
+                {({ handleChange, handleBlur, handleSubmit, values, errors, touched, isSubmitting, setFieldValue }) => (
                     <LinearGradient
                         colors={['rgba(255,255,255,1)', 'rgba(222,222,222,1)', 'rgba(255,255,255,1)']}
                         start={{ x: 0, y: 0.5 }}
@@ -173,103 +227,93 @@ export const DatosCliente = () => {
                         <Text style={styles.NombreCliente}>{contexto.usuario.Name} {contexto.usuario.LastName}</Text>
                         <Text style={styles.tuInfo}>{ingles ? idiomaIngles.subtitulo : idiomaSpanol.subtitulo}</Text>
                         <ScrollView style={styles.ScrollView}>
-                            <TextInput
-                                style={[styles.input, focus === 'input1' && styles.textInputFocused]}
-                                placeholder={ingles ? idiomaIngles.plnombre : idiomaSpanol.plnombre}
-                                placeholderTextColor="#303030"
-                                onFocus={() => { handleFocus('input1') }}
-                                onChangeText={handleChange('nombre')}
-                                onBlur={handleBlur('nombre')}
-                                value={values.nombre}
-                            ></TextInput>
-                            {errors.nombre && touched.nombre && <Text style={{ color: 'red' }}>{errors.nombre}</Text>}
-                            <TextInput
-                                style={[styles.input, focus === 'input2' && styles.textInputFocused]}
-                                placeholder={ingles ? idiomaIngles.plapellido : idiomaSpanol.plapellido}
-                                placeholderTextColor="#303030"
-                                onFocus={() => { handleFocus('input2') }}
-                                onBlur={handleBlur('apellido')}
-                                onChangeText={handleChange('apellido')}
-                                value={values.apellido}
-                            ></TextInput>
-                            {errors.apellido && touched.apellido && <Text style={{ color: 'red' }}>{errors.apellido}</Text>}
+                            <KeyboardAvoidingView
+                                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                                style={styles.form}>
+                                <TextInput
+                                    style={[styles.input, focus === 'input1' && styles.textInputFocused]}
+                                    placeholder={ingles ? idiomaIngles.plnombre : idiomaSpanol.plnombre}
+                                    placeholderTextColor="#303030"
+                                    onFocus={() => { handleFocus('input1') }}
+                                    onChangeText={handleChange('nombre')}
+                                    onBlur={handleBlur('nombre')}
+                                    value={values.nombre}
+                                ></TextInput>
+                                {errors.nombre && touched.nombre && <Text style={{ color: 'red' }}>{errors.nombre}</Text>}
+                                <TextInput
+                                    style={[styles.input, focus === 'input2' && styles.textInputFocused]}
+                                    placeholder={ingles ? idiomaIngles.plapellido : idiomaSpanol.plapellido}
+                                    placeholderTextColor="#303030"
+                                    onFocus={() => { handleFocus('input2') }}
+                                    onBlur={handleBlur('apellido')}
+                                    onChangeText={handleChange('apellido')}
+                                    value={values.apellido}
+                                ></TextInput>
+                                {errors.apellido && touched.apellido && <Text style={{ color: 'red' }}>{errors.apellido}</Text>}
 
-                            <TextInput
-                                style={[styles.input, focus === 'input3' && styles.textInputFocused]}
-                                placeholder={ingles ? idiomaIngles.plcorreo : idiomaSpanol.plcorreo}
-                                placeholderTextColor="#303030"
-                                onFocus={() => { handleFocus('input3') }}
-                                onBlur={handleBlur('email')}
-                                onChangeText={handleChange('email')}
-                                value={values.email}
-                            ></TextInput>
-                            {errors.email && touched.email && <Text style={{ color: 'red' }}>{errors.email}</Text>}
-
-                            <View style={styles.inputSeleccion}>
-                                <RNPickerSelect
-                                    onValueChange={(value) => {
-                                        setSelectedEstado(value);
-                                        handleChange('estado')(value);
-                                    }}
+                                <TextInput
+                                    style={[styles.input, focus === 'input3' && styles.textInputFocused]}
+                                    placeholder={ingles ? idiomaIngles.plcorreo : idiomaSpanol.plcorreo}
+                                    placeholderTextColor="#303030"
+                                    onFocus={() => { handleFocus('input3') }}
+                                    onBlur={handleBlur('email')}
+                                    onChangeText={handleChange('email')}
+                                    value={values.email}
+                                ></TextInput>
+                                {errors.email && touched.email && <Text style={{ color: 'red' }}>{errors.email}</Text>}
+                                <CustomSelect
                                     items={estados}
-                                    placeholder={{
-                                        label: contexto.usuario.State,
-                                        value: values.estado,
+                                    onValueChange={(value) => {
+                                        setSelectedEstado(value.Id);
+                                        setFieldValue('estado', value.Name);
                                     }}
-                                    style={{
-                                        inputAndroid: {
-                                            height: '100%',
-                                            fontSize: 20,
-                                            color: '#303030',
-                                            backgroundColor: '#fff'
-                                        },
-                                        inputIOS: {
-                                            fontSize: 16,
-                                            color: '#303030',
-                                            backgroundColor: '#fff',
-                                            padding: 10
-                                        },
+                                    placeholder={{
+                                        label: ingles ? 'State' : 'Estado',
+                                        value: '',
                                     }}
                                 />
-                            </View>
-                            <View style={styles.inputSeleccion}>
-                                <RNPickerSelect
-                                    onValueChange={handleChange('ciudad')}
+                                <CustomSelect
+
                                     items={ciudades}
-                                    placeholder={{
-                                        label: contexto.usuario.City,
-                                        value: values.ciudad,
+
+                                    onValueChange={(value) => {
+                                        setSelectedCiudad(value.Id);
+                                        setFieldValue('ciudad', value.Name);
                                     }}
-                                    style={{
-                                        inputAndroid: {
-                                            height: '100%',
-                                            fontSize: 20,
-                                            color: '#303030',
-                                            backgroundColor: '#fff'
-                                        },
-                                        inputIOS: {
-                                            fontSize: 16,
-                                            color: '#303030',
-                                            backgroundColor: '#fff',
-                                            padding: 10
-                                        },
+                                    placeholder={{
+                                        label: ingles ? 'City' : 'Ciudad',
+                                        value: '',
                                     }}
                                 />
-                            </View>
-
-                            <TextInput
-                                style={[styles.input, focus === 'input4' && styles.textInputFocused]}
-                                onFocus={() => { handleFocus('input4') }}
-                                placeholder={ingles ? idiomaIngles.plcontrasenia : idiomaSpanol.plcontrasenia}
-                                placeholderTextColor="#282828"
-                                onChangeText={handleChange('contrasenia')}
-                                onBlur={handleBlur('contrasenia')}
-                                value={values.contrasenia}
-                                keyboardType="default"
-                                secureTextEntry
-                            />
-                            {errors.contrasenia && touched.contrasenia && <Text style={{ color: 'red' }}>{errors.contrasenia}</Text>}
-
+                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <TextInput
+                                        style={[styles.input, focus === 'input4' && styles.textInputFocused, { flex: 1 }]}
+                                        onFocus={() => { handleFocus('input4') }}
+                                        placeholder={ingles ? 'Password' : 'Contraseña'}
+                                        placeholderTextColor="#282828"
+                                        onChangeText={handleChange('contrasenia')}
+                                        onBlur={handleBlur('contrasenia')}
+                                        value={values.contrasenia}
+                                        keyboardType="default"
+                                        secureTextEntry={!showPassword}
+                                    />
+                                    <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={{ marginLeft: 10 }}>
+                                        <Image source={ojo} alt="ojo" style={styles.ojo} />
+                                    </TouchableOpacity>
+                                </View>
+                                {errors.contrasenia && touched.contrasenia && <Text style={{ color: 'red' }}>{errors.contrasenia}</Text>}
+                                <TextInput
+                                    style={[styles.input, focus === 'input5' && styles.textInputFocused]}
+                                    onFocus={() => { handleFocus('input5') }}
+                                    placeholder={ingles ? 'Repeat Password' : 'Repetir Contraseña'}
+                                    placeholderTextColor="#282828"
+                                    onChangeText={(text) => setRepeatPassword(text)}
+                                    onBlur={() => handleFocus('')}
+                                    value={repeatPassword}
+                                    keyboardType="default"
+                                    secureTextEntry={!showPassword}
+                                />
+                            </KeyboardAvoidingView>
                         </ScrollView>
                         <TouchableOpacity
                             onPress={() => { handleSubmit() }}
@@ -318,6 +362,10 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         borderColor: '#ebebeb',
         borderWidth: 1
+    },
+    ojo: {
+        height: 25,
+        width: 25,
     },
     tipTip: {
         position: 'absolute',
@@ -414,10 +462,15 @@ const styles = StyleSheet.create({
         marginTop: 4,
         borderRadius: 4
     },
+    form: {
+        flex: 1,
+        justifyContent: 'center',
+        paddingHorizontal: 20,
+      },
     flecha: {
         position: 'absolute',
         left: 10,
-        top:10,
+        top: 10,
         paddingTop: 5
     },
     textoOpciones: {
@@ -427,5 +480,14 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         marginTop: 4,
         borderRadius: 4
-    },  
+    },
+    item: {
+        backgroundColor: '#f9c2ff',
+        padding: 20,
+        marginVertical: 8,
+        marginHorizontal: 16,
+    },
+    title: {
+        fontSize: 32,
+    },
 });

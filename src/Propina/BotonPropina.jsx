@@ -148,7 +148,21 @@ export const BotonPropina = () => {
         });
         setTimeout(() => {
             setIsPressed(true)
-        }, 100)
+        }, 50)
+    };
+    const handlePressB = () => {
+        setContador(contador + 1);
+        let Sound = require('react-native-sound');
+        const sound = new Sound('coin.mp3', Sound.MAIN_BUNDLE, (error) => {
+            if (error) {
+                console.error('Error al cargar el sonido', error);
+                return;
+            }
+            // Reproducir el sonido si se cargó correctamente
+            sound.play(() => {
+                sound.release();
+            });
+        });
     };
     const handleRating = (value) => {
         setRating(value);
@@ -301,7 +315,7 @@ export const BotonPropina = () => {
                                 <Text style={{ fontSize: 18, marginTop: 15, color: '#282828' }}>dls</Text>
                             </View>
                             <TouchableOpacity
-                               onPress={handlePress}
+                                onPress= { handlePressB }
                                 style={[styles.botonesInput, styles.botonMas]}>
                                 <Text style={[styles.buttonText, { color: '#fff' }]}>+</Text>
                             </TouchableOpacity>

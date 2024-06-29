@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import { Formik } from 'formik';
 import React, { useContext, useState, useEffect } from 'react'
-import { Image, ImageBackground, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Image, ImageBackground, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView, Platform } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import { resetPasswordSchemaValidation, resetPasswordSchemaValidationEn } from '../modules/loginCredenciales';
@@ -11,10 +11,13 @@ import RNPickerSelect from 'react-native-picker-select';
 import DeviceInfo from 'react-native-device-info';
 import SvgFlecha from '../Admin/SvgFlecha';
 import { Loader } from '../Loader/Loader';
+import { CustomSelect } from '../modules/personalizedComponent.tsx'
+
 
 export const ResetPassword = () => {
     const fondo: any = require("../../assets/Fondo-Tiptip-01.jpg");
     const logo: any = require("../../assets/Logo-Tiptip-02.png");
+    const ojo: any = require("../../assets/ojo.png");
     const navigate = useNavigation();
     const [focus, setFocus] = useState("");
     const isIOS = DeviceInfo.getSystemName() === 'iOS';
@@ -25,6 +28,10 @@ export const ResetPassword = () => {
     const [error, setError] = useState(false);
     const [ingles, setIngles] = useState(contexto.usuario.English);
     const [modalVisible2, setModalVisible2] = useState(false);
+    const [selectedValue, setSelectedValue] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [repeatPassword, setRepeatPassword] = useState('');
+    
     useEffect(() => {
         setIngles(contexto.usuario.English);
     }, [contexto.usuario.English])
@@ -36,6 +43,7 @@ export const ResetPassword = () => {
 
     const resetearContrasenia = async (email: string, userType: string, password: string) => {
         setIsLoad(true);
+        console.log("entro")
         var usuario = {};
         if (userType === '1') {
             //creamos un objeto con los datos del usuario
@@ -44,6 +52,7 @@ export const ResetPassword = () => {
                 password: password,
                 userType: 'client'
             }
+            console.log(usuario)
         } else {
             //creamos un objeto con los datos del repartidor
             usuario = {
@@ -92,6 +101,22 @@ export const ResetPassword = () => {
         placeholder: 'Select an account'
     };
 
+    const items = ingles
+        ? [
+            { Name: "User", Id: '1' },
+            { Name: "Delivery", Id: '2' }
+        ]
+        : [
+            { Name: "Usuario", Id: '1' },
+            { Name: "Entrega", Id: '2' }
+        ];
+
+    const placeholders = ingles
+        ?
+        { label: "Select an option", value: null }
+        :
+        { label: "Seleciona una opcion", value: null }
+        ;
 
     return (
         <View style={styles.container}>
@@ -128,11 +153,16 @@ export const ResetPassword = () => {
                         }}
                         validationSchema={ingles ? resetPasswordSchemaValidationEn : resetPasswordSchemaValidation}
                         onSubmit={(values) => {
+                            console.log(values)
                             resetearContrasenia(values.email, values.servicio, values.contrasenia);
                         }}
                     >
-                        {({ handleChange, handleBlur, handleSubmit, values, errors, touched, isSubmitting }) => (
+                        {({ handleChange, handleBlur, handleSubmit, values, errors, touched, isSubmitting, setFieldValue }) => (
                             <ScrollView style={styles.ScrollView}>
+                            <KeyboardAvoidingView
+                                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                                style={styles.form}
+                            >
                                 <TextInput
                                     style={[styles.input, focus === 'input1' && styles.textInputFocused]}
                                     onFocus={() => { handleFocus('input1') }}
@@ -146,34 +176,42 @@ export const ResetPassword = () => {
                                     ref={refEmail}
                                 />
                                 {errors.email && touched.email && <Text style={{ color: 'red' }}>{errors.email}</Text>}
-                                <TextInput
-                                    style={[styles.input, focus === 'input2' && styles.textInputFocused]}
-                                    onFocus={() => { handleFocus('input2') }}
-                                    placeholder={ingles ? idiomaIngles.contrasenia : idiomaSpanol.contrasenia}
-                                    placeholderTextColor="#282828"
-                                    onChangeText={handleChange('contrasenia')}
-                                    onBlur={handleBlur('contrasenia')}
-                                    value={values.contrasenia}
-                                    keyboardType="default"
-                                    secureTextEntry
-                                    ref={refContrasenia}
-                                />
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <TextInput
+                                        style={[styles.input, focus === 'input8' && styles.textInputFocused, { flex: 1 }]}
+                                        onFocus={() => { handleFocus('input8') }}
+                                        placeholder={ingles ? 'Password' : 'Contraseña'}
+                                        placeholderTextColor="#282828"
+                                        onChangeText={handleChange('contrasenia')}
+                                        onBlur={handleBlur('contrasenia')}
+                                        value={values.contrasenia}
+                                        keyboardType="default"
+                                        secureTextEntry={!showPassword}
+                                    />
+                                    <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={{ marginLeft: 10 }}>
+                                        <Image source={ojo} alt="ojo" style={styles.ojo} />
+                                    </TouchableOpacity>
+                                </View>
                                 {errors.contrasenia && touched.contrasenia && <Text style={{ color: 'red' }}>{errors.contrasenia}</Text>}
+                                <TextInput
+                                    style={[styles.input, focus === 'input9' && styles.textInputFocused]}
+                                    onFocus={() => { handleFocus('input9') }}
+                                    placeholder={ingles ? 'Repeat Password' : 'Repetir Contraseña'}
+                                    placeholderTextColor="#282828"
+                                    onChangeText={(text) => setRepeatPassword(text)}
+                                    onBlur={() => handleFocus('')}
+                                    value={repeatPassword}
+                                    keyboardType="default"
+                                    secureTextEntry={!showPassword}
+                                />
                                 <Text style={styles.textoCuenta}> {ingles ? idiomaIngles.cuenta : idiomaSpanol.cuenta}</Text>
-                                <View style={styles.inputSeleccion}>
+                                {/*<View style={styles.inputSeleccion}>
                                     <RNPickerSelect
                                         onValueChange={handleChange('servicio')}
-                                        items={ingles ? [
-                                            { label: "User", value: '1' },
-                                            { label: "Delivery", value: '2' },
-                                        ] : [
-                                            { label: "Usuario", value: '1' },
-                                            { label: "Repartidor", value: '2' },
-                                        ]}
-                                        placeholder={{
-                                            label: "Select an option",
-                                            value: null,
-                                        }}
+                                        items={items}
+                                        placeholder={
+                                            placeholders
+                                        }
                                         style={{
                                             inputAndroid: {
                                                 height: '100%',
@@ -190,7 +228,20 @@ export const ResetPassword = () => {
                                             },
                                         }}
                                     />
-                                </View>
+                                </View>*/}
+                                <CustomSelect
+
+                                    items={items}
+
+                                    onValueChange={(value) => {
+                                        setSelectedValue(value.Id);
+                                        setFieldValue('servicio', value.Id);
+                                    }}
+                                    placeholder={{
+                                        label: ingles ? 'User type' : 'tipo de usuario',
+                                        value: '',
+                                    }}
+                                />
                                 {
                                     error && <Text style={{ color: 'red' }}>{ingles ? idiomaIngles.error : idiomaSpanol.error}</Text>
                                 }
@@ -205,7 +256,8 @@ export const ResetPassword = () => {
                                             <Text style={{ color: 'white', textAlign: 'center', fontSize: 22, fontFamily: defaultStyle.fontGeneral.fontFamily }}>{ingles ? idiomaIngles.btn : idiomaSpanol.btn}</Text>
                                     }
                                 </TouchableOpacity>
-                            </ScrollView>
+                            </KeyboardAvoidingView>
+                        </ScrollView>
 
                         )}
                     </Formik>
@@ -255,6 +307,10 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         width: '100%',
         paddingRight: 20
+    },
+    ojo: {
+        height: 25,
+        width: 25,
     },
     textoOpciones: {
         color: 'rgb(212,46,46)',
@@ -359,6 +415,11 @@ const styles = StyleSheet.create({
         height: '100%',
         alignSelf: 'center',
         padding: 15,
+    },
+    form: {
+        flex: 1,
+        justifyContent: 'center',
+        paddingHorizontal: 20,
     },
     modalContainer: {
         position: 'absolute',

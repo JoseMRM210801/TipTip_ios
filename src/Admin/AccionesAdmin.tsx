@@ -37,7 +37,6 @@ export const AccionesAdmin = () => {
     }
     const infoCVSI = async () => {
         try {
-            // const response = await fetch('https://bett-production.up.railway.app/api/csv/mail', {
             const response = await fetch('https://bett-production.up.railway.app/api/csv/mail', {
 
                 method: 'POST',
@@ -59,7 +58,6 @@ export const AccionesAdmin = () => {
     const infoCVS = async () => {
         try {
             console.log(1)
-            // const response = await fetch('https://bett-production.up.railway.app/api/csv', {
             const response = await fetch('https://bett-production.up.railway.app/api/csv', {
 
                 method: 'GET',
@@ -123,7 +121,8 @@ export const AccionesAdmin = () => {
         textoInferiorProveedor: 'Ver los datos de todas las transacciones.',
         btnEliminar: 'Elimnar usuarios',
         btnCSV: 'Genera el CSV',
-        textoInferiorEliminar: 'Para eliminar usuarios debes estar seguros, puesto que esta acción no se puede revertir.'
+        textoInferiorEliminar: 'Para eliminar usuarios debes estar seguros, puesto que esta acción no se puede revertir.',
+        textoRestaurar: 'Restaurar fechas de corte'
     }
     const idiomaIngles = {
         salir: 'Exit',
@@ -136,7 +135,8 @@ export const AccionesAdmin = () => {
         textoInferiorProveedor: 'View all transaction data.',
         btnEliminar: 'Delete users',
         btnCSV: 'Generates the csv to review the transactions',
-        textoInferiorEliminar: 'To delete users you must be sure, as this action cannot be reversed.'
+        textoInferiorEliminar: 'To delete users you must be sure, as this action cannot be reversed.',
+        textoRestaurar: 'Restore cut-off dates'
     };
 
     useFocusEffect(
@@ -303,7 +303,7 @@ export const AccionesAdmin = () => {
                             onPress={() => { setModalFecha(!modalFecha) }}
                             style={{ padding: 10, backgroundColor: 'rgb(212,46,46)', borderRadius: 8, width: '90%', marginTop: 12 }}>
                             <Text style={{ color: 'white', textAlign: 'center', fontSize: 22, fontFamily: defaultStyle.fontGeneral.fontFamily }}>
-                                RESTAURAR FECHAS DE CORTE
+                                {ingles ? idiomaIngles.textoRestaurar : idiomaSpanol.textoRestaurar}
                             </Text>
                         </TouchableOpacity>
 
@@ -484,7 +484,7 @@ const styles = StyleSheet.create({
     flecha: {
         position: 'absolute',
         left: 10,
-        top:10,
+        top: 10,
         paddingTop: 5
     },
     textoOpciones: {

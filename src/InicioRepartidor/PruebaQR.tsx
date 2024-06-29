@@ -170,7 +170,7 @@ export const PruebaQR = () => {
 
                 <View style={styles.contenedorOpciones}>
                     <TouchableOpacity
-                        onPress={() => { navigate.goBack(); }}
+                        onPress={() => { navigate.navigate('InicioRepartidor' as never) }}
                         style={[styles.textoOpciones, styles.flecha]}>
                         <SvgFlecha />
                     </TouchableOpacity>

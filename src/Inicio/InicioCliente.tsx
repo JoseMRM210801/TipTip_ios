@@ -16,9 +16,13 @@ export const InicioCliente = () => {
     const navigate = useNavigation();
     const contexto = useContext(AppContext);
     const [ingles, setIngles] = useState(contexto.usuario.English);
+
     useEffect(() => {
-        setIngles(contexto.usuario.English);
+        console.log("contexto: "+contexto.usuario.English)
+        console.log("variable: "+ingles)
+        setIngles(ingles);
     }, [contexto.usuario.English])
+
     const isIOS = DeviceInfo.getSystemName() === 'iOS';
     const idiomaSpanol = {
         salir: 'Salir',
