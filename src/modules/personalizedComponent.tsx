@@ -7,7 +7,6 @@ import {
   Modal,
   FlatList,
   ListRenderItem,
-  InteractionManager,
 } from 'react-native';
 
 interface Item {
@@ -18,7 +17,7 @@ interface Item {
 interface CustomSelectProps {
   items: Item[];
   onValueChange: (Id: Item) => void;
-  placeholder: {label: string; value: string}; // Modificado aquí
+  placeholder: {label: string; value: string};
   isLoading?: boolean;
 }
 
@@ -57,6 +56,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
     ),
     [handleSelectItem],
   );
+
   useEffect(() => {
     if (!isLoading && items.length > 0) {
       setTimeout(() => {
@@ -64,13 +64,13 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
       }, 1000);
     }
   }, [isLoading, items]);
+
   return (
     <View style={styles.container}>
       <TouchableOpacity
         onPress={() => setModalVisible(true)}
         style={styles.selectBox}>
         <Text style={styles.selectText}>
-          {/*{selectedValue ? selectedValue.Name : placeholder}*/}
           {selectedValue ? selectedValue.Name : placeholder.label}
         </Text>
       </TouchableOpacity>
@@ -82,6 +82,11 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
         onRequestClose={() => setModalVisible(false)}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setModalVisible(false)}>
+              <Text style={styles.closeButtonText}>←</Text>
+            </TouchableOpacity>
             {!isInteractive ? (
               <Text style={{color: '#000'}}>Cargando...</Text>
             ) : (
@@ -137,6 +142,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+  },
+  closeButton: {
+    alignSelf: 'flex-start',
+    marginBottom: 10,
+  },
+  closeButtonText: {
+    fontSize: 24,
+    color: '#000',
   },
   item: {
     padding: 10,

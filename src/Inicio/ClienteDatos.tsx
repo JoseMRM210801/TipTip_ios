@@ -92,7 +92,7 @@ export const DatosCliente = () => {
 
     const getStates = async () => {
         try {
-            const response = await fetch('http://192.168.1.43:8090/api/states', {
+            const response = await fetch('https://bett-production.up.railway.app/api/states', {
                 method: 'GET',
                 mode: 'cors',
                 headers: {

@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import { Formik } from 'formik';
-import React, { useContext, useState, useEffect } from 'react'
-import { Image, ImageBackground, Modal, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import React, { useContext, useState, useEffect } from 'react';
+import { Image, ImageBackground, Modal, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import { loginSchemaValidation, loginSchemaValidationEn } from '../modules/loginCredenciales';
@@ -17,6 +17,7 @@ export const LoginCredenciales = () => {
     const fondo: any = require("../../assets/Fondo-Tiptip-01.jpg");
     const logo: any = require("../../assets/Logo-Tiptip-02.png");
     const ojo: any = require("../../assets/ojo.png");
+    const ojoc: any = require("../../assets/ojoc.png");
     const navigate = useNavigation();
     const [focus, setFocus] = useState("");
     const isIOS = DeviceInfo.getSystemName() === 'iOS';
@@ -28,9 +29,10 @@ export const LoginCredenciales = () => {
     const [ingles, setIngles] = useState(contexto.usuario.English);
     const [modalVisible2, setModalVisible2] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+
     useEffect(() => {
-        setIngles(ingles);
-    }, [contexto.usuario.English])
+        setIngles(contexto.usuario.English);
+    }, [contexto.usuario.English]);
 
     const [modalVisible, setModalVisible] = useState(false);
 
@@ -38,15 +40,15 @@ export const LoginCredenciales = () => {
         try {
             await AsyncStorage.setItem('email', email);
             await AsyncStorage.setItem('password', password);
-
         } catch (error) {
             console.log(error);
         }
+    };
 
-    }
     const handleFocus = (nombreInput: string) => {
         setFocus(nombreInput);
-    }
+    };
+
     const Login = async (correo: string, pass: string) => {
         setIsLoad(true);
         let login: Usuario = {
@@ -66,12 +68,9 @@ export const LoginCredenciales = () => {
             Account: "",
             AccNumber: "",
             English: contexto.usuario.English
-        }
+        };
 
-        //fetch('http://192.168.1.72:8090/api/login', {
         fetch('https://bett-production.up.railway.app/api/login', {
-            // fetch('http://10.0.2.2:8090/api/login', {
-            //fetch('http://127.0.0.1:8090/api/login', {
             method: 'POST',
             mode: 'cors',
             headers: {
@@ -79,15 +78,12 @@ export const LoginCredenciales = () => {
             },
             body: JSON.stringify(login)
         })
-            .then(res => {
-                return res.json()
-            })
+            .then(res => res.json())
             .then(data => {
-                console.log(data)
+                console.log(data);
                 if (data == null) {
                     setError(true);
                     setIsLoad(false);
-                    // Cambiar el borde a uno rojo
                     (refEmail?.current as any)?.setNativeProps({ style: { borderColor: 'red' } });
                     (refContrasenia?.current as any)?.setNativeProps({ style: { borderColor: 'red' } });
                     return;
@@ -99,38 +95,31 @@ export const LoginCredenciales = () => {
                 }
                 if (data.Role_Id != null) {
                     setIsLoad(true);
-                    console.log(data)
                     const usuarioIngles = {
                         ...data,
                         English: ingles
-                    }
+                    };
                     contexto.setUsuario(usuarioIngles);
-                    console.log("PINCHE LOGIN")
-                    console.log(contexto.usuario)
                     guardarLogin(correo, pass);
                     if (data.Role_Id == "1") {
                         navigate.navigate("InicioCliente" as never);
-                        console.log("wachaperro" + contexto.usuario.English)
                     } else if (data.Role_Id == "2") {
                         navigate.navigate("InicioRepartidor" as never);
                     } else if (data.Role_Id == "3") {
                         navigate.navigate("InicioAdministrador" as never);
                     }
-                }
-                else {
-
+                } else {
                     setError(true);
                     setIsLoad(false);
-                    // Cambiar el borde a uno rojo
                     (refEmail?.current as any)?.setNativeProps({ style: { borderColor: 'red' } });
                     (refContrasenia?.current as any)?.setNativeProps({ style: { borderColor: 'red' } });
                 }
             }).catch((err) => {
-                console.log(err)
+                console.log(err);
                 setIsLoad(false);
                 setModalVisible2(true);
-            })
-    }
+            });
+    };
 
     const idiomaSpanol = {
         email: 'Correo',
@@ -140,7 +129,7 @@ export const LoginCredenciales = () => {
         modal: 'La contraseña o el correo no coinciden',
         modal2: 'Por favor autentica tu correo, revisa tu bandeja de entrada o spam',
         olvidoContrasena: '¿Olvidaste tu contraseña?'
-    }
+    };
 
     const idiomaIngles = {
         email: 'Email',
@@ -168,8 +157,8 @@ export const LoginCredenciales = () => {
                         <SvgFlecha />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => {
-                        setIngles(!ingles)
-                        contexto.setUsuario({ ...contexto.usuario, English: !ingles })
+                        setIngles(!ingles);
+                        contexto.setUsuario({ ...contexto.usuario, English: !ingles });
                     }}>
                         <Text style={styles.textoOpciones}>{ingles ? 'Es' : 'En'}</Text>
                     </TouchableOpacity>
@@ -188,18 +177,16 @@ export const LoginCredenciales = () => {
                         onSubmit={(values) => {
                             Login(values.email, values.contrasenia);
                             guardarLogin(values.email, values.contrasenia);
-                            console.log("Contexto al presionar boton:" + contexto.usuario.English)
                         }}
                     >
                         {({ handleChange, handleBlur, handleSubmit, values, errors, touched, isSubmitting }) => (
                             <ScrollView style={styles.ScrollView}>
                                 <TextInput
                                     style={[styles.input, focus === 'input1' && styles.textInputFocused]}
-                                    onFocus={() => { handleFocus('input1') }}
+                                    onFocus={() => { handleFocus('input1'); }}
                                     placeholder={ingles ? idiomaIngles.email : idiomaSpanol.email}
                                     placeholderTextColor="#282828"
-                                    onChangeText={handleChange('email')
-                                    }
+                                    onChangeText={handleChange('email')}
                                     onBlur={handleBlur('nombre')}
                                     value={values.email}
                                     keyboardType="email-address"
@@ -210,8 +197,8 @@ export const LoginCredenciales = () => {
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                     <TextInput
                                         style={[styles.input, focus === 'input2' && styles.textInputFocused, { flex: 1 }]}
-                                        onFocus={() => { handleFocus('input2') }}
-                                        placeholder={ingles ? 'Password' : 'Contraseña'}
+                                        onFocus={() => { handleFocus('input2'); }}
+                                        placeholder={ingles ? idiomaIngles.contrasenia : idiomaSpanol.contrasenia}
                                         placeholderTextColor="#282828"
                                         onChangeText={handleChange('contrasenia')}
                                         onBlur={handleBlur('contrasenia')}
@@ -221,30 +208,26 @@ export const LoginCredenciales = () => {
                                         ref={refContrasenia}
                                     />
                                     <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={{ marginLeft: 10 }}>
-                                        <Image source={ojo} alt="ojo" style={styles.ojo} />
+                                        <Image source={showPassword ? ojoc : ojo} alt="ojo" style={styles.ojo} />
                                     </TouchableOpacity>
                                 </View>
                                 {errors.contrasenia && touched.contrasenia && <Text style={{ color: 'red' }}>{errors.contrasenia}</Text>}
-                                {
-                                    error && <Text style={{ color: 'red' }}>{ingles ? idiomaIngles.error : idiomaSpanol.error}</Text>
-                                }
+                                {error && <Text style={{ color: 'red' }}>{ingles ? idiomaIngles.error : idiomaSpanol.error}</Text>}
                                 <TouchableOpacity
                                     style={{ padding: 10, backgroundColor: 'rgb(212,46,46)', borderRadius: 8, width: '90%', marginTop: 12, alignSelf: 'center' }}
-                                    onPress={() => { handleSubmit() }}
+                                    onPress={() => { handleSubmit(); }}
                                     disabled={isLoad}
                                 >
-                                    {
-                                        isLoad ?
-                                            <Loader />
-                                            :
-                                            <Text style={{ color: 'white', textAlign: 'center', fontSize: 22, fontFamily: defaultStyle.fontGeneral.fontFamily }}>{ingles ? idiomaIngles.btn : idiomaSpanol.btn}</Text>
-                                    }
+                                    {isLoad ? <Loader /> : (
+                                        <Text style={{ color: 'white', textAlign: 'center', fontSize: 22, fontFamily: defaultStyle.fontGeneral.fontFamily }}>
+                                            {ingles ? idiomaIngles.btn : idiomaSpanol.btn}
+                                        </Text>
+                                    )}
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={() => { navigate.navigate('ResetPassword' as never); }} style={{ alignSelf: 'center', marginTop: 20 }}>
                                     <Text style={{ color: '#000000', fontSize: 18 }}>{ingles ? idiomaIngles.olvidoContrasena : idiomaSpanol.olvidoContrasena}</Text>
                                 </TouchableOpacity>
                             </ScrollView>
-
                         )}
                     </Formik>
                     <Modal
@@ -253,8 +236,8 @@ export const LoginCredenciales = () => {
                         visible={modalVisible}
                         onRequestClose={() => {
                             setModalVisible(!modalVisible);
-                        }}>
-
+                        }}
+                    >
                         <View style={styles.modalContainer}>
                             <Text style={styles.modalText}>{ingles ? idiomaIngles.modal : idiomaSpanol.modal}</Text>
                             <TouchableOpacity
@@ -274,8 +257,8 @@ export const LoginCredenciales = () => {
                         visible={modalVisible2}
                         onRequestClose={() => {
                             setModalVisible2(!modalVisible2);
-                        }}>
-
+                        }}
+                    >
                         <View style={styles.modalContainer}>
                             <Text style={styles.modalText}>{ingles ? idiomaIngles.modal2 : idiomaSpanol.modal2}</Text>
                             <TouchableOpacity
@@ -290,10 +273,10 @@ export const LoginCredenciales = () => {
                     </Modal>
                 </LinearGradient>
             </ImageBackground>
+        </View>
+    );
+};
 
-        </View >
-    )
-}
 const styles = StyleSheet.create({
     container: {
         flex: 1,

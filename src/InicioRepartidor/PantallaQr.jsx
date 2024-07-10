@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useContext, useState, useRef, useEffect } from 'react'
-import { Modal, ImageBackground, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native'
+import { Modal, ImageBackground, StyleSheet, Text, TouchableOpacity, View, Image, PermissionsAndroid, Platform } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient';
 import QRCode from 'react-qr-code';
 import { AppContext } from '../Contexto/AppContext';
@@ -10,8 +10,6 @@ import DeviceInfo from 'react-native-device-info';
 import SvgFlecha from '../Admin/SvgFlecha';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import logoImage from '../../assets/Logo-Tiptip-02.png';
-
-
 
 export const PantallaQr = () => {
     const fondo = require("../../assets/Fondo-Tiptip-01.jpg");
@@ -25,6 +23,29 @@ export const PantallaQr = () => {
     const navigate = useNavigation();
     const [modalVisible, setModalVisible] = useState(false);
     const [rutaPDF, setRutaPDF] = useState('');
+
+    const requestStoragePermission = async () => {
+        if (Platform.OS === 'android') {
+            try {
+                const granted = await PermissionsAndroid.request(
+                    PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+                    {
+                        title: 'Permiso de almacenamiento',
+                        message: 'Esta aplicación necesita acceso a su almacenamiento para guardar el archivo PDF.',
+                        buttonNeutral: 'Preguntar más tarde',
+                        buttonNegative: 'Cancelar',
+                        buttonPositive: 'OK',
+                    },
+                );
+                return granted === PermissionsAndroid.RESULTS.GRANTED;
+            } catch (err) {
+                console.warn(err);
+                return false;
+            }
+        }
+        return true;
+    }
+
     const salir = async () => {
         const limpiarUsuario = {
             Id: "",
@@ -41,7 +62,6 @@ export const PantallaQr = () => {
             User: ""
         }
         contexto.setUsuario(limpiarUsuario);
-        //seria limpiar el local storage 
         try {
             await AsyncStorage.removeItem('email');
             await AsyncStorage.removeItem('password');
@@ -50,11 +70,13 @@ export const PantallaQr = () => {
         }
         navigate.navigate('Login');
     }
+
     let enemail = {
         id: contexto.usuario.Id,
         mail: contexto.usuario.Email,
         path: contexto.usuario.User
     }
+
     const PDF = async () => {
         try {
             const response = await fetch('https://bett-production.up.railway.app/api/qr/mail', {
@@ -74,9 +96,15 @@ export const PantallaQr = () => {
     }
 
     const captureScreenAndConvertToPDF = async () => {
+        const hasPermission = await requestStoragePermission();
+        if (!hasPermission) {
+            console.log('No tiene permiso para acceder al almacenamiento.');
+            return;
+        }
+
         if (isIOS) {
             try {
-                await PDF(); // Asumiendo que esta función maneja iOS
+                await PDF();
             } catch (error) {
                 console.log(error);
             }
@@ -86,20 +114,17 @@ export const PantallaQr = () => {
                 const currentDate = new Date();
                 const formattedDate = currentDate.toISOString().replace(/:/g, '-').replace(/\..+/, '');
                 let options = {
-                    html: `<img src="${uri}" style="width: 350px; height: 350px; margin: auto; display: block; margin-top: 150px"/><img src="${Image.resolveAssetSource(logoImage).uri}" style="width: 100px; height: 100px; display: block; margin: auto; object-fit: containr;"/>`,
-                    fileName: `QRCode_${formattedDate}`,
+                    html: `<img src="${uri}" style="width: 350px; height: 400px; margin: auto; display: block; margin-top: 150px; object-fit: contain;"/>`,
                     directory: 'Documents',
                 };
                 const file = await RNHTMLtoPDF.convert(options);
                 setRutaPDF(`Documents/Documents/QRCode_${formattedDate}.pdf`);
                 setModalVisible(true);
-    
             } catch (error) {
                 console.log(error);
             }
         }
     };
-    
 
     const idiomaSpanol = {
         salir: 'Salir',
@@ -110,8 +135,7 @@ export const PantallaQr = () => {
         iconoDatos: "Editar datos",
         botonDos: 'Dar propina',
         ruta: 'Ruta de tu PDF:',
-        info:"Favor de tomar captura de pantalla"
-
+        info: "Favor de tomar captura de pantalla"
     }
 
     const idiomaIngles = {
@@ -123,7 +147,7 @@ export const PantallaQr = () => {
         iconoDatos: 'Edit data',
         botonDos: 'Give tip',
         ruta: 'Location of the PDF:',
-        info:"Please take a screenshot"
+        info: "Please take a screenshot"
     };
 
     return (
@@ -156,30 +180,25 @@ export const PantallaQr = () => {
                     start={{ x: 0, y: 0.5 }}
                     end={{ x: 1, y: 1.5 }}
                     style={styles.containerInfo}>
-                    <ViewShot>
-                        <QRCode ref={qrRef}
+                    <ViewShot ref={qrRef} style={styles.qrContainer}>
+                        <QRCode
                             size={256}
-                            style={{ height: "auto", maxWidth: "100%", width: "100%" }}
                             value={contexto.usuario.User.toString()}
-                            marginTop={20}
                         />
-                     
-                     </ViewShot>
-                     <Image style={styles.Logo}
-                        source={require("../../assets/Logo-Tiptip-02.png")}/>
-                         <Text style={styles.texto}>{contexto.usuario.User.toString()}</Text>
+                        <Image style={styles.logo}
+                            source={require("../../assets/Logo-Tiptip-02.png")} />
+                        <Text style={styles.texto}>{contexto.usuario.User.toString()}</Text>
+                    </ViewShot>
                     {
                         !isIOS &&
                         <TouchableOpacity style={styles.downloadButton} onPress={captureScreenAndConvertToPDF}>
                             <Text style={styles.downloadButtonText}>{ingles ? idiomaIngles.boton : idiomaSpanol.boton}</Text>
                         </TouchableOpacity>
-
                     }
-                     {
+                    {
                         isIOS &&
                         <Text style={styles.logo}>{ingles ? idiomaIngles.info : idiomaSpanol.info}</Text>
                     }
-
 
                     <Modal
                         animationType="slide"
@@ -203,30 +222,29 @@ export const PantallaQr = () => {
                     </Modal>
                 </LinearGradient>
             </ImageBackground>
-
         </View>
-
     );
 }
 
 const styles = StyleSheet.create({
     downloadButton: {
-        marginTop: 110,
+        marginTop: 20,
         backgroundColor: 'rgb(212,46,46)',
         padding: 10,
         borderRadius: 5,
+        alignItems: 'center'
     },
-    texto:{
-        color:"#000000",
-        fontSize:18
+    texto: {
+        color: "#000000",
+        fontSize: 18,
+        marginTop: 10,
+        textAlign: 'center'
     },
-    Logo:{
-        width:100,
-        height:50,
-        alignContent:"center",
-        justifyContent: 'center',
-        position: 'relative',
-        flexDirection:"column"
+    logo: {
+        width: 150,
+        height: 100,
+        marginTop: 10,
+        alignSelf: 'center'
     },
     downloadButtonText: {
         color: 'white',
@@ -237,7 +255,6 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignContent: 'center',
-        position: 'relative',
         alignItems: 'center'
     },
     backgroundImageContainer: {
@@ -266,7 +283,7 @@ const styles = StyleSheet.create({
     flecha: {
         position: 'absolute',
         left: 10,
-        top:10,
+        top: 10,
         paddingTop: 5
     },
     textoOpciones: {
@@ -276,7 +293,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         marginTop: 4,
         borderRadius: 4
-    }, 
+    },
     containerInfo: {
         position: 'absolute',
         top: '22%',
@@ -302,13 +319,10 @@ const styles = StyleSheet.create({
         fontSize: 24,
         textAlign: 'center',
     },
-    textoOpcionesF: {
-        color: 'rgb(212,46,46)',
-        fontSize: 18,
-        paddingHorizontal: 8,
-        backgroundColor: "#fff",
-        marginTop: 4,
-        borderRadius: 4
+    qrContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 20
     },
     modalContainer: {
         position: 'absolute',

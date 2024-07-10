@@ -2,17 +2,17 @@ import React, { useState, useContext, useEffect } from 'react';
 import { View, Image, StyleSheet, Text, TextInput, TouchableOpacity, ScrollView, Modal } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { defaultStyle } from '../Theme/Theme';
-import { ruta_desarrollo, ruta_produccion }from '../desarrollo/ruta.tsx';
-import { Formik, Field, Form } from 'formik';
+import { ruta_desarrollo, ruta_produccion } from '../desarrollo/ruta';
+import { Formik } from 'formik';
 import { deliverySchemaValidation, deliverySchemaValidationEn } from '../modules/registroProveedor';
 import { IDelivery } from '../Modelos/Repartidor';
 import { AppContext } from '../Contexto/AppContext';
 import { useNavigation } from '@react-navigation/native';
 import DeviceInfo from 'react-native-device-info';
 import SvgFlecha from '../Admin/SvgFlecha';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { IEstados } from '../Modelos/Estados';
-import { CustomSelect } from '../modules/personalizedComponent.tsx'
+import { CustomSelect } from '../modules/personalizedComponent';
 import { ICiudades } from '../Modelos/Ciudades';
 
 export const RegistroProveedor = () => {
@@ -36,7 +36,7 @@ export const RegistroProveedor = () => {
 
     const handleFocus = (nombreInput: string) => {
         setFocus(nombreInput);
-    }
+    };
 
     const idiomaSpanol = {
         saludo: "Registrate aquí en segundos",
@@ -44,24 +44,21 @@ export const RegistroProveedor = () => {
         btn: 'Iniciar',
         servicio: '¿Qué servicio ofreces?',
         contrasenasNoIguales: 'Las contraseñas no son iguales'
-    }
+    };
 
     const idiomaIngles = {
         saludo: "Register here in seconds",
         peticion: 'Please fill out the information only this time.',
         btn: 'Start',
-        servicio: 'what service do you offer?',
+        servicio: 'What service do you offer?',
         contrasenasNoIguales: 'Passwords do not match'
     };
-    
-    const placeholders = ingles
-        ?
-        { label: "Which service?", value: null }
-        :
-        { label: "¿Qué servicio ofreces?", value: null }
-        ;
 
-    const items=[
+    const placeholders = ingles
+        ? { label: "Which service?", value: null }
+        : { label: "¿Qué servicio ofreces?", value: null };
+
+    const items = [
         { Name: 'Amazon', Id: '1' },
         { Name: 'Amazon Flex', Id: '2' },
         { Name: 'UPS', Id: '3' },
@@ -75,8 +72,8 @@ export const RegistroProveedor = () => {
         { Name: 'General Carrier', Id: '11' },
         { Name: 'Lasership', Id: '12' },
         { Name: 'On Track', Id: '13' },
-        { Name: 'Other', Id: '14' },
-    ]
+        { Name: 'Other', Id: '14' }
+    ];
 
     const [ciudades, setCiudades] = useState<any[]>([]);
     const [estados, setEstados] = useState<any[]>([]);
@@ -99,7 +96,7 @@ export const RegistroProveedor = () => {
                 contexto.setUsuario(data);
             })
             .catch(error => console.error('Error:', error));
-    }
+    };
 
     interface Item {
         Name: string;
@@ -108,19 +105,19 @@ export const RegistroProveedor = () => {
 
     const getStates = async () => {
         try {
-            const response = await fetch('http://192.168.1.47:8090/api/states', {
+            const response = await fetch('https://bett-production.up.railway.app/api/states', {
                 method: 'GET',
                 mode: 'cors',
                 headers: {
                     'Content-Type': 'application/json'
-                },
+                }
             });
 
             const data: IEstados[] = await response.json();
 
-            console.log(data)
+            console.log(data);
 
-            const estadosItems: Item[] = data.map((estado) => ({ // Utiliza IEstados aquí también
+            const estadosItems: Item[] = data.map((estado) => ({
                 Name: estado.Name,
                 Id: estado.Id ? estado.Id.toString() : ''
             }));
@@ -143,37 +140,34 @@ export const RegistroProveedor = () => {
     const getCities = async () => {
         try {
             if (selectedEstado) {
-                const response = await fetch(`http://192.168.1.47:8090/api/city/${selectedEstado}`, {
+                const response = await fetch(`https://bett-production.up.railway.app/api/city/${selectedEstado}`, {
                     method: 'GET',
                     mode: 'cors',
                     headers: {
                         'Content-Type': 'application/json'
-                    },
+                    }
                 });
-    
-                const data: IEstados[] = await response.json();
 
-                console.log(selectedCiudad)
-    
-                console.log(data)
-    
-                const ciudadesItems: ItemCiudades[] = data.map((ciudad) => ({ // Utiliza IEstados aquí también
+                const data: ICiudades[] = await response.json();
+
+                console.log(selectedCiudad);
+                console.log(data);
+
+                const ciudadesItems: ItemCiudades[] = data.map((ciudad) => ({
                     Name: ciudad.Name,
                     Id: ciudad.Id ? ciudad.Id.toString() : ''
                 }));
-    
+
                 setCiudades(ciudadesItems);
-            } 
-        }catch (error) {
-                console.error('Error fetching estados:', error);
             }
-    }
+        } catch (error) {
+            console.error('Error fetching ciudades:', error);
+        }
+    };
 
     useEffect(() => {
         getCities();
     }, [selectedEstado]);
-
-
 
     const Item = ({ Name }: IEstados) => (
         <View style={styles.item}>
@@ -221,7 +215,7 @@ export const RegistroProveedor = () => {
                     nocuenta: '',
                     contrasenia: '',
                     servicio: '',
-                    ocupacion: '',
+                    ocupacion: ''
                 }}
                 validationSchema={ingles ? deliverySchemaValidationEn : deliverySchemaValidation}
                 onSubmit={(values) => {
@@ -243,10 +237,11 @@ export const RegistroProveedor = () => {
                         AccNumber: values.nocuenta,
                         User: "",
                         Service: values.servicio,
-                        Occupation: values.ocupacion,
-                    }
+                        Occupation: values.ocupacion
+                    };
                     insertarRepartidor(repartidor);
-                }}>
+                }}
+            >
                 {({ handleChange, handleBlur, handleSubmit, values, errors, touched, isSubmitting, setFieldValue }) => (
                     <LinearGradient
                         colors={['rgba(255,255,255,1)', 'rgba(222,222,222,1)', 'rgba(255,255,255,1)']}
@@ -262,7 +257,7 @@ export const RegistroProveedor = () => {
                                     style={[styles.input, focus === 'input1' && styles.textInputFocused]}
                                     placeholder={ingles ? 'Name' : 'Nombre'}
                                     placeholderTextColor="#282828"
-                                    onFocus={() => { handleFocus('input1') }}
+                                    onFocus={() => { handleFocus('input1'); }}
                                     onChangeText={handleChange('nombre')}
                                     onBlur={handleBlur('nombre')}
                                     value={values.nombre}
@@ -272,7 +267,7 @@ export const RegistroProveedor = () => {
                                     style={[styles.input, focus === 'input2' && styles.textInputFocused]}
                                     placeholder={ingles ? 'Last name' : 'Apellido'}
                                     placeholderTextColor="#282828"
-                                    onFocus={() => { handleFocus('input2') }}
+                                    onFocus={() => { handleFocus('input2'); }}
                                     onChangeText={handleChange('apellido')}
                                     onBlur={handleBlur('apellido')}
                                     value={values.apellido}
@@ -282,7 +277,7 @@ export const RegistroProveedor = () => {
                                     style={[styles.input, focus === 'input3' && styles.textInputFocused]}
                                     placeholder={ingles ? 'Email' : 'Correo electrónico'}
                                     placeholderTextColor="#282828"
-                                    onFocus={() => { handleFocus('input3') }}
+                                    onFocus={() => { handleFocus('input3'); }}
                                     onChangeText={handleChange('email')}
                                     onBlur={handleBlur('email')}
                                     value={values.email}
@@ -293,7 +288,7 @@ export const RegistroProveedor = () => {
                                     style={[styles.input, focus === 'input4' && styles.textInputFocused]}
                                     placeholder={ingles ? 'Bank' : 'Banco'}
                                     placeholderTextColor="#282828"
-                                    onFocus={() => { handleFocus('input4') }}
+                                    onFocus={() => { handleFocus('input4'); }}
                                     onChangeText={handleChange('banco')}
                                     onBlur={handleBlur('banco')}
                                     value={values.banco}
@@ -302,7 +297,7 @@ export const RegistroProveedor = () => {
                                     style={[styles.input, focus === 'input5' && styles.textInputFocused]}
                                     placeholder={ingles ? 'Account type' : 'Tipo de cuenta'}
                                     placeholderTextColor="#282828"
-                                    onFocus={() => { handleFocus('input5') }}
+                                    onFocus={() => { handleFocus('input5'); }}
                                     onChangeText={handleChange('tipocuenta')}
                                     onBlur={handleBlur('tipocuenta')}
                                     value={values.tipocuenta}
@@ -311,7 +306,7 @@ export const RegistroProveedor = () => {
                                     style={[styles.input, focus === 'input6' && styles.textInputFocused]}
                                     placeholder={ingles ? 'Account number' : 'Número de cuenta'}
                                     placeholderTextColor="#282828"
-                                    onFocus={() => { handleFocus('nocuenta') }}
+                                    onFocus={() => { handleFocus('nocuenta'); }}
                                     onChangeText={handleChange('nocuenta')}
                                     onBlur={handleBlur('nocuenta')}
                                     value={values.nocuenta}
@@ -325,26 +320,24 @@ export const RegistroProveedor = () => {
                                     }}
                                     placeholder={{
                                         label: ingles ? 'State' : 'Estado',
-                                        value: '',
+                                        value: ''
                                     }}
                                 />
                                 <CustomSelect
-
                                     items={ciudades}
-
                                     onValueChange={(value) => {
                                         setSelectedCiudad(value.Id);
                                         setFieldValue('ciudad', value.Name);
                                     }}
                                     placeholder={{
                                         label: ingles ? 'City' : 'Ciudad',
-                                        value: '',
+                                        value: ''
                                     }}
                                 />
                                 <TextInput
                                     style={[styles.input, focus === 'input7' && styles.textInputFocused]}
                                     placeholder={ingles ? 'Occupation' : 'Ocupación'}
-                                    onFocus={() => { handleFocus('input7') }}
+                                    onFocus={() => { handleFocus('input7'); }}
                                     onChangeText={handleChange('ocupacion')}
                                     onBlur={handleBlur('ocupacion')}
                                     value={values.ocupacion}
@@ -352,23 +345,21 @@ export const RegistroProveedor = () => {
                                 />
                                 {errors.ocupacion && touched.ocupacion && values.ocupacion == '' && <Text style={{ color: 'red' }}>{errors.ocupacion}</Text>}
                                 <CustomSelect
-
                                     items={items}
-
                                     onValueChange={(value) => {
                                         setSelectedValue(value.Id);
                                         setFieldValue('servicio', value.Id);
                                     }}
                                     placeholder={{
                                         label: ingles ? 'Service' : 'Servicio',
-                                        value: '',
+                                        value: ''
                                     }}
                                 />
                                 {errors.servicio && touched.servicio && <Text style={{ color: 'red' }}>{errors.servicio}</Text>}
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                     <TextInput
                                         style={[styles.input, focus === 'input8' && styles.textInputFocused, { flex: 1 }]}
-                                        onFocus={() => { handleFocus('input8') }}
+                                        onFocus={() => { handleFocus('input8'); }}
                                         placeholder={ingles ? 'Password' : 'Contraseña'}
                                         placeholderTextColor="#282828"
                                         onChangeText={handleChange('contrasenia')}
@@ -378,13 +369,13 @@ export const RegistroProveedor = () => {
                                         secureTextEntry={!showPassword}
                                     />
                                     <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={{ marginLeft: 10 }}>
-                                        <Image source={ojo} alt="ojo" style={styles.ojo} />
+                                        <Image source={showPassword ? ojoc : ojo} alt="ojo" style={styles.ojo} />
                                     </TouchableOpacity>
                                 </View>
                                 {errors.contrasenia && touched.contrasenia && <Text style={{ color: 'red' }}>{errors.contrasenia}</Text>}
                                 <TextInput
                                     style={[styles.input, focus === 'input9' && styles.textInputFocused]}
-                                    onFocus={() => { handleFocus('input9') }}
+                                    onFocus={() => { handleFocus('input9'); }}
                                     placeholder={ingles ? 'Repeat Password' : 'Repetir Contraseña'}
                                     placeholderTextColor="#282828"
                                     onChangeText={(text) => setRepeatPassword(text)}
@@ -437,16 +428,16 @@ const styles = StyleSheet.create({
     },
     ojo: {
         height: 25,
-        width: 25,
+        width: 25
     },
     backgroundImageContainer: {
         height: '100%',
-        width: '100%',
+        width: '100%'
     },
     backgroundImage: {
         width: '100%',
         height: '100%',
-        resizeMode: 'cover',
+        resizeMode: 'cover'
     },
     containerInfo: {
         position: 'absolute',
@@ -462,7 +453,7 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         flex: 1,
         justifyContent: 'center',
-        alignContent: 'center',
+        alignContent: 'center'
     },
     tipTip: {
         position: 'absolute',
@@ -498,7 +489,7 @@ const styles = StyleSheet.create({
         borderWidth: 4,
         shadowOffset: { width: -2, height: 4 },
         shadowOpacity: 0.2,
-        shadowRadius: 3,
+        shadowRadius: 3
     },
     inputSeleccion: {
         height: 45,
@@ -558,7 +549,7 @@ const styles = StyleSheet.create({
     form: {
         flex: 1,
         justifyContent: 'center',
-        paddingHorizontal: 20,
+        paddingHorizontal: 20
     },
     tuInfo: {
         fontSize: 18,
@@ -573,37 +564,37 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0,0,0,0.5)',
+        backgroundColor: 'rgba(0,0,0,0.5)'
     },
     modalContent: {
         width: '80%',
         padding: 20,
         backgroundColor: '#fff',
         borderRadius: 10,
-        alignItems: 'center',
+        alignItems: 'center'
     },
     modalText: {
         fontSize: 18,
-        marginBottom: 15,
+        marginBottom: 15
     },
     modalButton: {
         padding: 10,
         backgroundColor: 'rgb(212,46,46)',
         borderRadius: 8,
         width: '50%',
-        alignItems: 'center',
+        alignItems: 'center'
     },
     modalButtonText: {
         color: 'white',
-        fontSize: 16,
+        fontSize: 16
     },
     item: {
         backgroundColor: '#f9c2ff',
         padding: 20,
         marginVertical: 8,
-        marginHorizontal: 16,
+        marginHorizontal: 16
     },
     title: {
-        fontSize: 32,
-    },
+        fontSize: 32
+    }
 });

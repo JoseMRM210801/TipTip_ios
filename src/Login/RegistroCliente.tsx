@@ -1,18 +1,18 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { View, Image, StyleSheet, Text, TextInput, TouchableOpacity, Modal, KeyboardAvoidingView, Platform } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { Formik, Field, Form } from 'formik';
+import { Formik } from 'formik';
 import RNPickerSelect from 'react-native-picker-select';
-import { FlatList, ScrollView } from 'react-native-gesture-handler';
+import { ScrollView } from 'react-native-gesture-handler';
 import SvgFlecha from '../Admin/SvgFlecha';
-import { clientSchemaValidation, clientSchemaValidationEn } from '../modules/registroCliente.tsx';
-import { defaultStyle } from '../Theme/Theme.tsx';
+import { clientSchemaValidation, clientSchemaValidationEn } from '../modules/registroCliente';
+import { defaultStyle } from '../Theme/Theme';
 import { Usuario } from '../Modelos/Usuario';
-import { AppContext } from '../Contexto/AppContext.tsx';
+import { AppContext } from '../Contexto/AppContext';
 import { useNavigation } from '@react-navigation/native';
 import DeviceInfo from 'react-native-device-info';
 import { IEstados } from '../Modelos/Estados';
-import { CustomSelect } from '../modules/personalizedComponent.tsx'
+import { CustomSelect } from '../modules/personalizedComponent';
 import { ICiudades } from '../Modelos/Ciudades';
 
 export const RegistroCliente = () => {
@@ -36,7 +36,7 @@ export const RegistroCliente = () => {
 
     const handleFocus = (nombreInput: string) => {
         setFocus(nombreInput);
-    }
+    };
 
     const [ciudades, setCiudades] = useState<any[]>([]);
     const [estados, setEstados] = useState<any[]>([]);
@@ -71,7 +71,7 @@ export const RegistroCliente = () => {
             State: estado,
             Token: "",
             User: ""
-        }
+        };
         fetch('https://bett-production.up.railway.app/api/client/signin', {
             method: 'POST',
             mode: 'cors',
@@ -85,7 +85,7 @@ export const RegistroCliente = () => {
                 contexto.setUsuario(data);
                 navigate.navigate("Credenciales" as never);
             }).catch(error => console.error('Error:', error));
-    }
+    };
 
     interface Item {
         Name: string;
@@ -94,7 +94,7 @@ export const RegistroCliente = () => {
 
     const getStates = async () => {
         try {
-            const response = await fetch('http://192.168.1.58:8090/api/states', {
+            const response = await fetch('https://bett-production.up.railway.app/api/states', {
                 method: 'GET',
                 mode: 'cors',
                 headers: {
@@ -104,9 +104,9 @@ export const RegistroCliente = () => {
 
             const data: IEstados[] = await response.json();
 
-            console.log(data)
+            console.log(data);
 
-            const estadosItems: Item[] = data.map((estado) => ({ // Utiliza IEstados aquí también
+            const estadosItems: Item[] = data.map((estado) => ({
                 Name: estado.Name,
                 Id: estado.Id ? estado.Id.toString() : ''
             }));
@@ -129,7 +129,7 @@ export const RegistroCliente = () => {
     const getCities = async () => {
         try {
             if (selectedEstado) {
-                const response = await fetch(`http://192.168.1.58:8090/api/city/${selectedEstado}`, {
+                const response = await fetch(`https://bett-production.up.railway.app/api/city/${selectedEstado}`, {
                     method: 'GET',
                     mode: 'cors',
                     headers: {
@@ -137,13 +137,12 @@ export const RegistroCliente = () => {
                     },
                 });
 
-                const data: IEstados[] = await response.json();
+                const data: ICiudades[] = await response.json();
 
-                console.log(selectedCiudad)
+                console.log(selectedCiudad);
+                console.log(data);
 
-                console.log(data)
-
-                const ciudadesItems: ItemCiudades[] = data.map((ciudad) => ({ // Utiliza IEstados aquí también
+                const ciudadesItems: ItemCiudades[] = data.map((ciudad) => ({
                     Name: ciudad.Name,
                     Id: ciudad.Id ? ciudad.Id.toString() : ''
                 }));
@@ -151,15 +150,13 @@ export const RegistroCliente = () => {
                 setCiudades(ciudadesItems);
             }
         } catch (error) {
-            console.error('Error fetching estados:', error);
+            console.error('Error fetching ciudades:', error);
         }
-    }
+    };
 
     useEffect(() => {
         getCities();
     }, [selectedEstado]);
-
-
 
     const Item = ({ Name }: IEstados) => (
         <View style={styles.item}>
@@ -187,8 +184,8 @@ export const RegistroCliente = () => {
                     <SvgFlecha />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => {
-                    setIngles(!ingles)
-                    contexto.setUsuario({ ...contexto.usuario, English: !ingles })
+                    setIngles(!ingles);
+                    contexto.setUsuario({ ...contexto.usuario, English: !ingles });
                 }}>
                     <Text style={styles.textoOpciones}>{ingles ? 'Es' : 'En'}</Text>
                 </TouchableOpacity>
@@ -238,7 +235,7 @@ export const RegistroCliente = () => {
                             >
                                 <TextInput
                                     style={[styles.input, focus === 'input1' && styles.textInputFocused]}
-                                    onFocus={() => { handleFocus('input1') }}
+                                    onFocus={() => { handleFocus('input1'); }}
                                     placeholder={ingles ? 'Name' : 'Nombre'}
                                     placeholderTextColor="#282828"
                                     onChangeText={handleChange('nombre')}
@@ -250,7 +247,7 @@ export const RegistroCliente = () => {
                                     style={[styles.input, focus === 'input2' && styles.textInputFocused]}
                                     placeholder={ingles ? 'Last name' : 'Apellido'}
                                     placeholderTextColor="#282828"
-                                    onFocus={() => { handleFocus('input2') }}
+                                    onFocus={() => { handleFocus('input2'); }}
                                     onChangeText={handleChange('apellido')}
                                     onBlur={handleBlur('apellido')}
                                     value={values.apellido}
@@ -260,7 +257,7 @@ export const RegistroCliente = () => {
                                     style={[styles.input, focus === 'input3' && styles.textInputFocused]}
                                     placeholder={ingles ? 'Email' : 'Correo electrónico'}
                                     placeholderTextColor="#282828"
-                                    onFocus={() => { handleFocus('input3') }}
+                                    onFocus={() => { handleFocus('input3'); }}
                                     onChangeText={handleChange('email')}
                                     onBlur={handleBlur('email')}
                                     value={values.email}
@@ -294,7 +291,7 @@ export const RegistroCliente = () => {
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                     <TextInput
                                         style={[styles.input, focus === 'input4' && styles.textInputFocused, { flex: 1 }]}
-                                        onFocus={() => { handleFocus('input4') }}
+                                        onFocus={() => { handleFocus('input4'); }}
                                         placeholder={ingles ? 'Password' : 'Contraseña'}
                                         placeholderTextColor="#282828"
                                         onChangeText={handleChange('contrasenia')}
@@ -304,13 +301,13 @@ export const RegistroCliente = () => {
                                         secureTextEntry={!showPassword}
                                     />
                                     <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={{ marginLeft: 10 }}>
-                                        <Image source={ojo} alt="ojo" style={styles.ojo} />
+                                        <Image source={showPassword ? ojoc : ojo} alt="ojo" style={styles.ojo} />
                                     </TouchableOpacity>
                                 </View>
                                 {errors.contrasenia && touched.contrasenia && <Text style={{ color: 'red' }}>{errors.contrasenia}</Text>}
                                 <TextInput
                                     style={[styles.input, focus === 'input5' && styles.textInputFocused]}
-                                    onFocus={() => { handleFocus('input5') }}
+                                    onFocus={() => { handleFocus('input5'); }}
                                     placeholder={ingles ? 'Repeat Password' : 'Repetir Contraseña'}
                                     placeholderTextColor="#282828"
                                     onChangeText={(text) => setRepeatPassword(text)}
@@ -360,30 +357,6 @@ export const RegistroCliente = () => {
                     </View>
                 </View>
             </Modal>
-            {/*<Modal
-                transparent={true}
-                visible={showStates}
-                animationType="slide"
-                onRequestClose={() => setShowStates(true)}
-            >
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalContent}>
-                        <FlatList
-                            data={estados}
-                            renderItem={({ item }: { item: IEstados }) => <Item Name={item.Name} />}
-                            //keyExtractor={(item: IEstados) => item.Id?.toString()}
-                            keyExtractor={(item: IEstados, index: number) => item.Id?.toString() || index.toString()}
-                        />
-                        <Text style={styles.modalText}>{ingles ? idiomaIngles.contrasenasNoIguales : idiomaSpanol.contrasenasNoIguales}</Text>
-                        <TouchableOpacity
-                            style={styles.modalButton}
-                            onPress={() => setShowStates(false)}
-                        >
-                            <Text style={styles.modalButtonText}>OK</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </Modal>*/}
         </View>
     );
 };
@@ -558,6 +531,4 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 32,
     },
-    /*renderItem={({ Name, Id } : IEstados) => <Item Name={Name} Id={Id} />}
-    keyExtractor={(item:any) => item.Id} */
 });
