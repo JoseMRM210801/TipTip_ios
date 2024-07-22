@@ -4,6 +4,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { Formik } from 'formik';
 import RNPickerSelect from 'react-native-picker-select';
 import { ScrollView } from 'react-native-gesture-handler';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import SvgFlecha from '../Admin/SvgFlecha';
 import { clientSchemaValidation, clientSchemaValidationEn } from '../modules/registroCliente';
 import { defaultStyle } from '../Theme/Theme';
@@ -227,97 +228,98 @@ export const RegistroCliente = () => {
                         style={styles.containerInfo}>
                         <Text style={styles.NombreCliente}>{ingles ? idiomaIngles.saludo : idiomaSpanol.saludo}</Text>
                         <Text style={styles.tuInfo}>{ingles ? idiomaIngles.peticion : idiomaSpanol.peticion}</Text>
-
-                        <ScrollView style={styles.ScrollView}>
+                        <KeyboardAwareScrollView style={styles.ScrollView}>
+                            {/*<ScrollView style={styles.ScrollView}>
                             <KeyboardAvoidingView
                                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                                 style={styles.form}
-                            >
-                                <TextInput
-                                    style={[styles.input, focus === 'input1' && styles.textInputFocused]}
-                                    onFocus={() => { handleFocus('input1'); }}
-                                    placeholder={ingles ? 'Name' : 'Nombre'}
-                                    placeholderTextColor="#282828"
-                                    onChangeText={handleChange('nombre')}
-                                    onBlur={handleBlur('nombre')}
-                                    value={values.nombre}
-                                />
-                                {errors.nombre && touched.nombre && <Text style={{ color: 'red' }}>{errors.nombre}</Text>}
-                                <TextInput
-                                    style={[styles.input, focus === 'input2' && styles.textInputFocused]}
-                                    placeholder={ingles ? 'Last name' : 'Apellido'}
-                                    placeholderTextColor="#282828"
-                                    onFocus={() => { handleFocus('input2'); }}
-                                    onChangeText={handleChange('apellido')}
-                                    onBlur={handleBlur('apellido')}
-                                    value={values.apellido}
-                                />
-                                {errors.apellido && touched.apellido && <Text style={{ color: 'red' }}>{errors.apellido}</Text>}
-                                <TextInput
-                                    style={[styles.input, focus === 'input3' && styles.textInputFocused]}
-                                    placeholder={ingles ? 'Email' : 'Correo electrónico'}
-                                    placeholderTextColor="#282828"
-                                    onFocus={() => { handleFocus('input3'); }}
-                                    onChangeText={handleChange('email')}
-                                    onBlur={handleBlur('email')}
-                                    value={values.email}
-                                />
-                                {errors.email && touched.email && <Text style={{ color: 'red' }}>{errors.email}</Text>}
-                                <CustomSelect
-                                    items={estados}
-                                    onValueChange={(value) => {
-                                        setSelectedEstado(value.Id);
-                                        setFieldValue('estado', value.Name);
-                                    }}
-                                    placeholder={{
-                                        label: ingles ? 'State' : 'Estado',
-                                        value: '',
-                                    }}
-                                />
-                                <CustomSelect
+                            >*/}
+                            <TextInput
+                                style={[styles.input, focus === 'input1' && styles.textInputFocused]}
+                                onFocus={() => { handleFocus('input1'); }}
+                                placeholder={ingles ? 'Name' : 'Nombre'}
+                                placeholderTextColor="#282828"
+                                onChangeText={handleChange('nombre')}
+                                onBlur={handleBlur('nombre')}
+                                value={values.nombre}
+                            />
+                            {errors.nombre && touched.nombre && <Text style={{ color: 'red' }}>{errors.nombre}</Text>}
+                            <TextInput
+                                style={[styles.input, focus === 'input2' && styles.textInputFocused]}
+                                placeholder={ingles ? 'Last name' : 'Apellido'}
+                                placeholderTextColor="#282828"
+                                onFocus={() => { handleFocus('input2'); }}
+                                onChangeText={handleChange('apellido')}
+                                onBlur={handleBlur('apellido')}
+                                value={values.apellido}
+                            />
+                            {errors.apellido && touched.apellido && <Text style={{ color: 'red' }}>{errors.apellido}</Text>}
+                            <TextInput
+                                style={[styles.input, focus === 'input3' && styles.textInputFocused]}
+                                placeholder={ingles ? 'Email' : 'Correo electrónico'}
+                                placeholderTextColor="#282828"
+                                onFocus={() => { handleFocus('input3'); }}
+                                onChangeText={handleChange('email')}
+                                onBlur={handleBlur('email')}
+                                value={values.email}
+                            />
+                            {errors.email && touched.email && <Text style={{ color: 'red' }}>{errors.email}</Text>}
+                            <CustomSelect
+                                items={estados}
+                                onValueChange={(value) => {
+                                    setSelectedEstado(value.Id);
+                                    setFieldValue('estado', value.Name);
+                                }}
+                                placeholder={{
+                                    label: ingles ? 'State' : 'Estado',
+                                    value: '',
+                                }}
+                            />
+                            <CustomSelect
 
-                                    items={ciudades}
+                                items={ciudades}
 
-                                    onValueChange={(value) => {
-                                        setSelectedCiudad(value.Id);
-                                        setFieldValue('ciudad', value.Name);
-                                    }}
-                                    placeholder={{
-                                        label: ingles ? 'City' : 'Ciudad',
-                                        value: '',
-                                    }}
-                                    isLoading={ciudades.length === 0}
-                                />
-                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                    <TextInput
-                                        style={[styles.input, focus === 'input4' && styles.textInputFocused, { flex: 1 }]}
-                                        onFocus={() => { handleFocus('input4'); }}
-                                        placeholder={ingles ? 'Password' : 'Contraseña'}
-                                        placeholderTextColor="#282828"
-                                        onChangeText={handleChange('contrasenia')}
-                                        onBlur={handleBlur('contrasenia')}
-                                        value={values.contrasenia}
-                                        keyboardType="default"
-                                        secureTextEntry={!showPassword}
-                                    />
-                                    <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={{ marginLeft: 10 }}>
-                                        <Image source={showPassword ? ojoc : ojo} alt="ojo" style={styles.ojo} />
-                                    </TouchableOpacity>
-                                </View>
-                                {errors.contrasenia && touched.contrasenia && <Text style={{ color: 'red' }}>{errors.contrasenia}</Text>}
+                                onValueChange={(value) => {
+                                    setSelectedCiudad(value.Id);
+                                    setFieldValue('ciudad', value.Name);
+                                }}
+                                placeholder={{
+                                    label: ingles ? 'City' : 'Ciudad',
+                                    value: '',
+                                }}
+                                isLoading={ciudades.length === 0}
+                            />
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <TextInput
-                                    style={[styles.input, focus === 'input5' && styles.textInputFocused]}
-                                    onFocus={() => { handleFocus('input5'); }}
-                                    placeholder={ingles ? 'Repeat Password' : 'Repetir Contraseña'}
+                                    style={[styles.input, focus === 'input4' && styles.textInputFocused, { flex: 1 }]}
+                                    onFocus={() => { handleFocus('input4'); }}
+                                    placeholder={ingles ? 'Password' : 'Contraseña'}
                                     placeholderTextColor="#282828"
-                                    onChangeText={(text) => setRepeatPassword(text)}
-                                    onBlur={() => handleFocus('')}
-                                    value={repeatPassword}
+                                    onChangeText={handleChange('contrasenia')}
+                                    onBlur={handleBlur('contrasenia')}
+                                    value={values.contrasenia}
                                     keyboardType="default"
                                     secureTextEntry={!showPassword}
                                 />
-                            </KeyboardAvoidingView>
-                        </ScrollView>
+                                <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={{ marginLeft: 10 }}>
+                                    <Image source={showPassword ? ojoc : ojo} alt="ojo" style={styles.ojo} />
+                                </TouchableOpacity>
+                            </View>
+                            {errors.contrasenia && touched.contrasenia && <Text style={{ color: 'red' }}>{errors.contrasenia}</Text>}
+                            <TextInput
+                                style={[styles.input, focus === 'input5' && styles.textInputFocused]}
+                                onFocus={() => { handleFocus('input5'); }}
+                                placeholder={ingles ? 'Repeat Password' : 'Repetir Contraseña'}
+                                placeholderTextColor="#282828"
+                                onChangeText={(text) => setRepeatPassword(text)}
+                                onBlur={() => handleFocus('')}
+                                value={repeatPassword}
+                                keyboardType="default"
+                                secureTextEntry={!showPassword}
+                            />
+                        </KeyboardAwareScrollView>
+                        {/*</KeyboardAvoidingView>
+                        </ScrollView>*/}
                         <TouchableOpacity
                             style={{ margin: 5, padding: 10, backgroundColor: 'rgb(212,46,46)', borderRadius: 8, width: '45%', marginTop: 12 }}
                             onPress={() => {

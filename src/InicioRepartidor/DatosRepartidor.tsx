@@ -95,7 +95,7 @@ export const DatosRepartidor = () => {
 
     const getStates = async () => {
         try {
-            const response = await fetch('http://192.168.1.43:8090/api/states', {
+            const response = await fetch('https://bett-production.up.railway.app/api/states', {
                 method: 'GET',
                 mode: 'cors',
                 headers: {
@@ -130,7 +130,7 @@ export const DatosRepartidor = () => {
     const getCities = async () => {
         try {
             if (selectedEstado) {
-                const response = await fetch(`http://192.168.1.43:8090/api/city/${selectedEstado}`, {
+                const response = await fetch(`https://bett-production.up.railway.app/api/city/${selectedEstado}`, {
                     method: 'GET',
                     mode: 'cors',
                     headers: {
