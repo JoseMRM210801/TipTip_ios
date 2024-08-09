@@ -31,34 +31,29 @@ export const BotonPropina = () => {
     const [accessToken, setAccessToken] = useState(null)
     const [isLoaded, setIsLoaded] = useState(false)
     const onPressPaypal = async () => {
-
+    
         const token = await paypalApi.generateToken(contexto.usuario.Token);
         const res = await paypalApi.createOrder(token, contador);
         console.log("res", res);
         console.log("token", token)
         setAccessToken(token);
-        //console.log("res++++++", res)
         if (res.links) {
             const findUrl = res.links.find((data) => data?.rel == "approve");
             setPaypalUrl(findUrl.href);
-
         }
     }
-
+    
     const onUrlChange = (webviewState) => {
-        //console.log("webviewStatewebviewState", webviewState)
         if (webviewState.url.includes('https://example.com/cancel')) {
             clearPaypalState()
             return;
         }
         if (webviewState.url.includes('https://example.com/return')) {
-
             const urlValues = queryString.parseUrl(webviewState.url)
             const { token } = urlValues.query
             if (token) {
                 paymentSucess(token)
             }
-
         }
     }
 
@@ -66,7 +61,6 @@ export const BotonPropina = () => {
         try {
             const res = await paypalApi.capturePayment(id, accessToken || "", contexto.usuario.Token)
             if (res != 'error') {
-                //fetch('http://192.168.0.7:8090/api/tip/add', {
                 fetch(`https://bett-production.up.railway.app/api/tip/add`, {
                     method: 'POST',
                     mode: 'cors',
@@ -82,9 +76,7 @@ export const BotonPropina = () => {
                 })
                     .then((response) => response.json())
                     .then((json) => {
-
                         fetch(`https://bett-production.up.railway.app/api/delivery/notifications/`, {
-
                             method: 'PUT',
                             mode: 'cors',
                             headers: {
@@ -140,8 +132,6 @@ export const BotonPropina = () => {
                 console.error('Error al cargar el sonido', error);
                 return;
             }
-
-            // Reproducir el sonido si se cargó correctamente
             sound.play(() => {
                 sound.release();
             });
@@ -158,7 +148,6 @@ export const BotonPropina = () => {
                 console.error('Error al cargar el sonido', error);
                 return;
             }
-            // Reproducir el sonido si se cargó correctamente
             sound.play(() => {
                 sound.release();
             });
@@ -183,7 +172,6 @@ export const BotonPropina = () => {
             User: ""
         }
         contexto.setUsuario(limpiarUsuario);
-        //seria limpiar el local storage 
         try {
             await AsyncStorage.removeItem('email');
             await AsyncStorage.removeItem('password');
@@ -193,14 +181,11 @@ export const BotonPropina = () => {
         navigate.navigate('Login');
     }
 
-    //const rating = (stars: number) => { return `★★★★★☆☆☆☆☆`.slice(5 - stars, 10 - stars); }
     const stars = ['☆', '☆', '☆', '☆', '☆'];
     const starsFill = ['★', '★', '★', '★', '★'];
 
     useEffect(() => {
-        // fetch(`http://192.168.0.7:8090/api/delivery/${value}`,
-        fetch(`https://bett-production.up.railway.app/api/delivery/user/${value}`,
-            {
+        fetch(`https://bett-production.up.railway.app/api/delivery/user/${value}`, {
                 method: 'GET',
                 mode: 'cors',
                 headers: {
@@ -276,7 +261,6 @@ export const BotonPropina = () => {
                                             activeOpacity={0.7}
                                         >
                                             <Text style={rating >= idx ? styles.estrellaLlena : styles.estrellaVacia}>{rating >= idx ? starsFill[idx] : star}</Text>
-
                                         </TouchableOpacity>
                                     )
                                 })
@@ -315,7 +299,7 @@ export const BotonPropina = () => {
                                 <Text style={{ fontSize: 18, marginTop: 15, color: '#282828' }}>dls</Text>
                             </View>
                             <TouchableOpacity
-                                onPress={handlePressB}
+                                onPress= { handlePressB }
                                 style={[styles.botonesInput, styles.botonMas]}>
                                 <Text style={[styles.buttonText, { color: '#fff' }]}>+</Text>
                             </TouchableOpacity>
@@ -338,9 +322,9 @@ export const BotonPropina = () => {
 
             <Modal
                 visible={!!paypalUrl}
-                style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' }}
+                style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.5)'}}
             >
-                <View style={{ paddingTop: 50, flex: 1 }}>  {/* Agrega padding en la parte superior */}
+                <View style={{ paddingTop: 50, flex: 1 }}> 
                     <TouchableOpacity
                         onPress={clearPaypalState}
                         style={{ margin: 24 }}
@@ -353,11 +337,20 @@ export const BotonPropina = () => {
                             onNavigationStateChange={onUrlChange}
                         />
                     </View>
+                    {/* Botón para cerrar el modal */}
+                    <TouchableOpacity
+                        onPress={clearPaypalState}
+                        style={styles.cerrarBotonContainer}
+                    >
+                        <Text style={styles.cerrarBotonTexto}>Cerrar</Text>
+                    </TouchableOpacity>
                 </View>
             </Modal>
+
         </View>
     )
 }
+
 const styles = StyleSheet.create({
     centrado: {
         flex: 1,
@@ -467,7 +460,7 @@ const styles = StyleSheet.create({
     flecha: {
         position: 'absolute',
         left: 10,
-        top: 10,
+        top:10,
         paddingTop: 5
     },
     textoOpciones: {
@@ -477,5 +470,17 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         marginTop: 4,
         borderRadius: 4
+    },
+    cerrarBotonContainer: {
+        padding: 10,
+        backgroundColor: 'rgb(212,46,46)',
+        borderRadius: 8,
+        margin: 20,
+        alignItems: 'center',
+    },
+    cerrarBotonTexto: {
+        color: 'white',
+        fontSize: 18,
+        fontWeight: 'bold',
     },
 });
