@@ -31,7 +31,7 @@ export const BotonPropina = () => {
     const [accessToken, setAccessToken] = useState(null)
     const [isLoaded, setIsLoaded] = useState(false)
     const onPressPaypal = async () => {
-    
+
         const token = await paypalApi.generateToken(contexto.usuario.Token);
         const res = await paypalApi.createOrder(token, contador);
         console.log("res", res);
@@ -44,7 +44,7 @@ export const BotonPropina = () => {
 
         }
     }
-    
+
     const onUrlChange = (webviewState) => {
         //console.log("webviewStatewebviewState", webviewState)
         if (webviewState.url.includes('https://example.com/cancel')) {
@@ -315,7 +315,7 @@ export const BotonPropina = () => {
                                 <Text style={{ fontSize: 18, marginTop: 15, color: '#282828' }}>dls</Text>
                             </View>
                             <TouchableOpacity
-                                onPress= { handlePressB }
+                                onPress={handlePressB}
                                 style={[styles.botonesInput, styles.botonMas]}>
                                 <Text style={[styles.buttonText, { color: '#fff' }]}>+</Text>
                             </TouchableOpacity>
@@ -338,22 +338,23 @@ export const BotonPropina = () => {
 
             <Modal
                 visible={!!paypalUrl}
-                style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.5)'}}
+                style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' }}
             >
-                <TouchableOpacity
-                    onPress={clearPaypalState}
-                    style={{ margin: 24 }}
-                >
-                    <Text>Closed</Text>
-                </TouchableOpacity>
-                <View style={{ flex: 1 }}>
-                    <WebView
-                        source={{ uri: paypalUrl ?? "" }}
-                        onNavigationStateChange={onUrlChange}
-                    />
+                <View style={{ paddingTop: 50, flex: 1 }}>  {/* Agrega padding en la parte superior */}
+                    <TouchableOpacity
+                        onPress={clearPaypalState}
+                        style={{ margin: 24 }}
+                    >
+                        <Text>Closed</Text>
+                    </TouchableOpacity>
+                    <View style={{ flex: 1 }}>
+                        <WebView
+                            source={{ uri: paypalUrl ?? "" }}
+                            onNavigationStateChange={onUrlChange}
+                        />
+                    </View>
                 </View>
             </Modal>
-
         </View>
     )
 }
@@ -466,7 +467,7 @@ const styles = StyleSheet.create({
     flecha: {
         position: 'absolute',
         left: 10,
-        top:10,
+        top: 10,
         paddingTop: 5
     },
     textoOpciones: {

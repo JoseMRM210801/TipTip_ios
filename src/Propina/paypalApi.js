@@ -1,8 +1,8 @@
 let baseUrl = 'https://api.paypal.com';
 const base64 = require('base-64');
 
-let clientId = 'AV2-au7OyBb1cqk78cV3m_2Kirf8QMZfU-v3PLKUTEAiKLFmnp2BXWzZxNRTQANRSUDGGr6GfU5Ht3H7';
-let secretKey = 'EM61kb4OVFZprSohJuuclNxte5fa4oYjORjKAz_e5EkEdSBy9tkfQNtI4SGSai2E8rYPqWOI2deFYPKq';
+let clientId = 'AQl4TzM8BAncjaaZRaaCydJ6NT1RgQay_oKSWzKFgbcXjmPsVinlOONOlCzbxX-8jXWwTBkNtonKctFt';
+let secretKey = 'EITosbu46w2d-SUYVNv_JqMcMgVmlIeHHR_CSRt6CcO76e-vH9HHlGAglTlY9P87v0tTOsBY2JcsvZh7';
 
 
 const generateToken = () => {
@@ -104,11 +104,6 @@ const capturePayment = (id, token = '') => {
         })
     })
 }
-
-
-
-
-
 
 
 export default {
