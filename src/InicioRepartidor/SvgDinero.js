@@ -19,7 +19,7 @@ const SvgDinero = (props) => {
    <g>
 	   <linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="25.9882" y1="24.4595" x2="26.2659" y2="24.4595">
 		   <stop  offset="0" style="stop-color:#F52A2A"/>
-		   <stop  offset="0.7671" style="stop-color:#FD5555"/>
+		   <stop  offset="0.7671" style="stop-color:#F52A2A"/>
 	   </linearGradient>
 	   <path class="st1" d="M26.3,25.2v-1.5C26,24,26,24.2,26,24.4C26,24.7,26,24.9,26.3,25.2z"/>
 	   
@@ -48,8 +48,8 @@ const SvgDinero = (props) => {
 		   C32.2,32.8,32.1,32.4,31.6,32z"/>
 	   
 		   <linearGradient id="SVGID_00000067952093441861468360000014622189968159863467_" gradientUnits="userSpaceOnUse" x1="1.3225" y1="28.8409" x2="56.3597" y2="28.8409">
-		   <stop  offset="0" style="stop-color:#F52A2A"/>
-		   <stop  offset="0.7671" style="stop-color:#FD5555"/>
+		   <stop  offset="0" style="stop-color:#DEDEDE"/>
+		   <stop  offset="0.7671" style="stop-color:#DEDEDE"/>
 	   </linearGradient>
 	   <path style="fill:url(#SVGID_00000067952093441861468360000014622189968159863467_);" d="M51.2,12.9c-1.1,1.1-2.5,1.8-4.2,1.8
 		   c-3.2,0-5.8-2.6-5.8-5.8c0-1.5,0.6-2.8,1.5-3.8c-4.1-2.4-8.8-3.8-13.9-3.8C13.6,1.3,1.3,13.6,1.3,28.8c0,15.2,12.3,27.5,27.5,27.5

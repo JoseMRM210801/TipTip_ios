@@ -134,7 +134,7 @@ export const InicioRepartidor = () => {
             </View>
 
             <View style={styles.saludo}>
-                <Pressable style={(isIOS ? styles.iconoDineroIos : styles.iconoDinero)}>
+                <Pressable style={(isIOS ? styles.iconoDineroIos : styles.iconoDinero)}   onPress={() => { navigate.navigate('CuentaRepartidor' as never) }}>
                     <View style={{ position: 'relative', height: '100%', width: '100%', overflow: "hidden" }}>
                         <SvgDinero fill={"#fff"} stroke={"#fff"} />
                         <View style={notificaciones ? styles.circulo : styles.circuloApagado}></View>
