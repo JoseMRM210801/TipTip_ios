@@ -7,6 +7,7 @@ import DeviceInfo from 'react-native-device-info';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Usuario } from '../Modelos/Usuario';
 import { Loader } from '../Loader/Loader';
+import { Ruta } from '../Ruta/Ruta';
 
 export const Login = () => {
     const fondo: any = require("../../assets/Fondo-Tiptip-01.jpg");
@@ -52,7 +53,7 @@ export const Login = () => {
         }
 
         // fetch('http://192.168.0.7:8090/api/login', {
-        fetch('https://bett-production.up.railway.app/api/login', {
+        fetch(`${Ruta}/login`, {
             //fetch('http://10.0.2.2:8090/api/login', {
             //fetch('http://127.0.0.1:8090/api/login', {
             method: 'POST',

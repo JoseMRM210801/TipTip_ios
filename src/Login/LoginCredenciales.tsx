@@ -12,6 +12,7 @@ import DeviceInfo from 'react-native-device-info';
 import SvgFlecha from '../Admin/SvgFlecha';
 import { Loader } from '../Loader/Loader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ruta } from '../Ruta/Ruta';
 
 export const LoginCredenciales = () => {
     const fondo: any = require("../../assets/Fondo-Tiptip-01.jpg");
@@ -70,7 +71,7 @@ export const LoginCredenciales = () => {
             English: contexto.usuario.English
         };
 
-        fetch('https://bett-production.up.railway.app/api/login', {
+        fetch(`${Ruta}/login`, {
             method: 'POST',
             mode: 'cors',
             headers: {

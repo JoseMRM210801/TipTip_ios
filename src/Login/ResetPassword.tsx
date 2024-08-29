@@ -12,6 +12,7 @@ import DeviceInfo from 'react-native-device-info';
 import SvgFlecha from '../Admin/SvgFlecha';
 import { Loader } from '../Loader/Loader';
 import { CustomSelect } from '../modules/personalizedComponent.tsx'
+import { Ruta } from '../Ruta/Ruta';
 
 
 export const ResetPassword = () => {
@@ -61,7 +62,7 @@ export const ResetPassword = () => {
                 userType: 'delivery'
             }
         }
-        const response = await fetch('https://bett-production.up.railway.app/api/reset', {
+        const response = await fetch(`${Ruta}/reset`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

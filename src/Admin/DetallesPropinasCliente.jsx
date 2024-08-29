@@ -5,6 +5,7 @@ import { AppContext } from '../Contexto/AppContext';
 import LinearGradient from 'react-native-linear-gradient';
 import { defaultStyle } from '../Theme/Theme';
 import SvgFlecha from './SvgFlecha';
+import {Ruta} from '../Ruta/Ruta';
 export const DetallesPropinasCliente = () => {
     const route = useRoute();
     const [data, setData] = useState();
@@ -34,7 +35,7 @@ export const DetallesPropinasCliente = () => {
     useEffect(() => {
         const id = route.params?.id;
         // fetch(`https://bett-production.up.railway.app/api/tip/client/${id}`, {
-            fetch(`https://bett-production.up.railway.app/api/tip/client/${id}`, {
+            fetch(`${Ruta}/tip/client/${id}`, {
 
             method: 'GET',
             mode: 'cors',

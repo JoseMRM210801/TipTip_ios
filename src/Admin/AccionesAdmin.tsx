@@ -13,6 +13,7 @@ import { Loader } from '../Loader/Loader';
 import { checkMultiple, PERMISSIONS, request, requestMultiple } from 'react-native-permissions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DatePicker from 'react-native-date-picker'
+import  {Ruta} from '../Ruta/Ruta';
 export const AccionesAdmin = () => {
     const fondo: any = require("../../assets/Fondo-Tiptip-01.jpg");
     const navigate = useNavigation();
@@ -37,7 +38,7 @@ export const AccionesAdmin = () => {
     }
     const infoCVSI = async () => {
         try {
-            const response = await fetch('https://bett-production.up.railway.app/api/csv/mail', {
+            const response = await fetch(`${Ruta}/csv/mail`, {
 
                 method: 'POST',
                 headers: {
@@ -58,7 +59,7 @@ export const AccionesAdmin = () => {
     const infoCVS = async () => {
         try {
             console.log(1)
-            const response = await fetch('https://bett-production.up.railway.app/api/csv', {
+            const response = await fetch(`${Ruta}/csv`, {
 
                 method: 'GET',
                 headers: {
@@ -198,7 +199,7 @@ export const AccionesAdmin = () => {
             const fechaFormateada2 = date2.toISOString().split('T')[0];
 
             try {
-                const respuesta = await fetch('https://bett-production.up.railway.app/api/tip/restore', {
+                const respuesta = await fetch(`${Ruta}/tip/restore`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',

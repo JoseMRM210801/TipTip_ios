@@ -14,6 +14,7 @@ import SvgFlecha from '../Admin/SvgFlecha';
 import { AppContext } from "../Contexto/AppContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ScrollView } from "react-native-gesture-handler";
+import { Ruta } from "../Ruta/Ruta";
 
 export const InicioRepartidor = () => {
 
@@ -37,7 +38,7 @@ export const InicioRepartidor = () => {
             };
 
             const interval = setInterval(() => {
-                fetch(`https://bett-production.up.railway.app/api/delivery/notifications/${contexto.usuario.Id}`, {
+                fetch(`${Ruta}/delivery/notifications/${contexto.usuario.Id}`, {
 
                     method: 'GET',
                     mode: 'cors',

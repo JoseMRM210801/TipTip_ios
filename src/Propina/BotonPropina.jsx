@@ -10,7 +10,7 @@ import { AppContext } from '../Contexto/AppContext';
 import paypalApi from './paypalApi';
 import { Loader } from '../Loader/Loader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { Ruta } from '../Ruta/Ruta';
 export const BotonPropina = () => {
     const fondo = require("../../assets/Fondo-Tiptip-01.jpg");
     const boton1 = require("../../assets/Boton-especial-01.png");
@@ -61,7 +61,7 @@ export const BotonPropina = () => {
         try {
             const res = await paypalApi.capturePayment(id, accessToken || "", contexto.usuario.Token)
             if (res != 'error') {
-                fetch(`https://bett-production.up.railway.app/api/tip/add`, {
+                fetch(`${Ruta}/tip/add`, {
                     method: 'POST',
                     mode: 'cors',
                     headers: {
@@ -76,7 +76,7 @@ export const BotonPropina = () => {
                 })
                     .then((response) => response.json())
                     .then((json) => {
-                        fetch(`https://bett-production.up.railway.app/api/delivery/notifications/`, {
+                        fetch(`${Ruta}/delivery/notifications/`, {
                             method: 'PUT',
                             mode: 'cors',
                             headers: {
@@ -100,6 +100,7 @@ export const BotonPropina = () => {
             clearPaypalState()
 
         } catch (error) {
+            console.log(id)
             console.log("error raised in payment capture", error)
         }
     }
@@ -185,7 +186,7 @@ export const BotonPropina = () => {
     const starsFill = ['★', '★', '★', '★', '★'];
 
     useEffect(() => {
-        fetch(`https://bett-production.up.railway.app/api/delivery/user/${value}`, {
+        fetch(`${Ruta}/delivery/user/${value}`, {
                 method: 'GET',
                 mode: 'cors',
                 headers: {

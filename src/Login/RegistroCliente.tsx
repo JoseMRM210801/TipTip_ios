@@ -15,6 +15,7 @@ import DeviceInfo from 'react-native-device-info';
 import { IEstados } from '../Modelos/Estados';
 import { CustomSelect } from '../modules/personalizedComponent';
 import { ICiudades } from '../Modelos/Ciudades';
+import { Ruta } from '../Ruta/Ruta';
 
 export const RegistroCliente = () => {
     const fondo: any = require("../../assets/Fondo-Tiptip-01.jpg");
@@ -73,7 +74,7 @@ export const RegistroCliente = () => {
             Token: "",
             User: ""
         };
-        fetch('https://bett-production.up.railway.app/api/client/signin', {
+        fetch(`${Ruta}/client/signin`, {
             method: 'POST',
             mode: 'cors',
             headers: {
@@ -95,7 +96,7 @@ export const RegistroCliente = () => {
 
     const getStates = async () => {
         try {
-            const response = await fetch('https://bett-production.up.railway.app/api/states', {
+            const response = await fetch(`${Ruta}/states`, {
                 method: 'GET',
                 mode: 'cors',
                 headers: {
@@ -130,7 +131,7 @@ export const RegistroCliente = () => {
     const getCities = async () => {
         try {
             if (selectedEstado) {
-                const response = await fetch(`https://bett-production.up.railway.app/api/city/${selectedEstado}`, {
+                const response = await fetch(`${Ruta}/city/${selectedEstado}`, {
                     method: 'GET',
                     mode: 'cors',
                     headers: {

@@ -5,7 +5,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { AppContext } from '../Contexto/AppContext';
 import SvgFlecha from './SvgFlecha';
 import DeviceInfo from 'react-native-device-info';
-
+import { Ruta } from '../Ruta/Ruta';
 export const RevisionPropinas = () => {
     const navigate = useNavigation();
     const isIOS = DeviceInfo.getSystemName() === 'iOS';
@@ -36,7 +36,7 @@ export const RevisionPropinas = () => {
     useEffect(() => {
         //simular la obtencion de datos
         // fetch(`https://bett-production.up.railway.app/api/tip/client/`, {
-            fetch(`https://bett-production.up.railway.app/api/tip/client/`, {
+            fetch(`${Ruta}/tip/client/`, {
 
             method: 'GET',
             mode: 'cors',

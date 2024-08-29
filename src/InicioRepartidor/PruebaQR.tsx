@@ -4,6 +4,7 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import LinearGradient from "react-native-linear-gradient";
 import SvgFlecha from '../Admin/SvgFlecha';
 import { AppContext } from '../Contexto/AppContext';
+import { Ruta } from '../Ruta/Ruta';
 
 export const PruebaQR = () => {
     const fondo = require("../../assets/Fondo-Tiptip-01.jpg");
@@ -24,7 +25,7 @@ export const PruebaQR = () => {
     }, [contexto.usuario.English]);
 
     useEffect(() => {
-        fetch(`https://bett-production.up.railway.app/api/delivery/user/${value}`, {
+        fetch(`${Ruta}/delivery/user/${value}`, {
             method: 'GET',
             mode: 'cors',
             headers: {

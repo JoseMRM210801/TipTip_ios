@@ -7,6 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import DeviceInfo from 'react-native-device-info';
 import SvgFlecha from '../Admin/SvgFlecha';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ruta } from '../Ruta/Ruta';
 
 export const CuentaRepartidor = () => {
   const fondo: any = require("../../assets/Fondo-Tiptip-01.jpg");
@@ -14,7 +15,7 @@ export const CuentaRepartidor = () => {
   const [ingles, setIngles] = useState(contexto.usuario.English);
   useEffect(() => {
     setIngles(contexto.usuario.English);
-    fetch(`https://bett-production.up.railway.app/api/delivery/notifications/`, {
+    fetch(`${Ruta}/delivery/notifications/`, {
 
       method: 'PUT',
       mode: 'cors',
@@ -77,7 +78,7 @@ export const CuentaRepartidor = () => {
     pie: 'Scan the provider\'s QR code'
   };
   useEffect(() => {
-    fetch(`https://bett-production.up.railway.app/api/tip/delivery/${contexto.usuario.Id}`, {
+    fetch(`${Ruta}/tip/delivery/${contexto.usuario.Id}`, {
       method: 'GET',
       mode: 'cors',
       headers: {

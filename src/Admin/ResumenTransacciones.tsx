@@ -6,7 +6,7 @@ import { defaultStyle } from '../Theme/Theme';
 import SvgFlecha from './SvgFlecha';
 import { useNavigation } from '@react-navigation/native';
 import DeviceInfo from 'react-native-device-info';
-
+import { Ruta } from '../Ruta/Ruta';
 export const ResumenTransacciones = () => {
     const fondo: any = require("../../assets/Fondo-Tiptip-01.jpg");
     const contexto = useContext(AppContext);
@@ -33,7 +33,7 @@ export const ResumenTransacciones = () => {
     useEffect(() => {
         //simular la obtencion de datos
         // fetch('https://bett-production.up.railway.app/api/csv/array', {
-            fetch('https://bett-production.up.railway.app/api/csv/array', {
+            fetch(`${Ruta}/csv/array`, {
 
             method: 'GET',
             mode: 'cors',
