@@ -389,19 +389,19 @@ const styles = StyleSheet.create({
     },
     circulo: {
         position: 'absolute',
-        height: 10,
-        width: 10,
+        height: 12,  // Asegura que las dimensiones sean iguales
+        width: 12,   // Asegura que las dimensiones sean iguales
         backgroundColor: "red",
-        borderRadius: 50,
+        borderRadius: 6, // La mitad de la altura y el ancho
         top: 0,
         right: 1,
         overflow: 'hidden',
     },
     circuloApagado: {
         position: 'absolute',
-        height: 10,
-        width: 10,
-        borderRadius: 50,
+        height: 12,  // Asegura que las dimensiones sean iguales
+        width: 12,   // Asegura que las dimensiones sean iguales
+        borderRadius: 6, // La mitad de la altura y el ancho
         top: 0,
         right: 1,
     },
