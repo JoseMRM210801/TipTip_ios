@@ -162,13 +162,12 @@ export const InicioRepartidor = () => {
                 <Pressable 
                     style={(isIOS ? styles.iconoRojoIos : styles.iconoRojo)} 
                     onPress={() => { 
-                        resetNotifications();
                         navigate.navigate('TerminosyCondiciones' as never) 
                     }}
                 >
                     <View style={{ position: 'relative', height: '100%', width: '100%' }}>
                         <SvgUsuario fill={"#fff"} stroke={"#fff"} />
-                        <View style={notificaciones ? styles.circulo : styles.circuloApagado}></View>
+                        {/* No se usa la lógica de notificaciones en este botón */}
                     </View>
                 </Pressable>
             </View>
@@ -389,21 +388,22 @@ const styles = StyleSheet.create({
     },
     circulo: {
         position: 'absolute',
-        height: 12,  // Asegura que las dimensiones sean iguales
-        width: 12,   // Asegura que las dimensiones sean iguales
+        height: 8,  // Asegura que las dimensiones sean iguales
+        width: 8,   // Asegura que las dimensiones sean iguales
         backgroundColor: "red",
-        borderRadius: 6, // La mitad de la altura y el ancho
+        borderRadius: 4, // La mitad de la altura y el ancho
         top: 0,
-        right: 1,
+        right: 0,
         overflow: 'hidden',
     },
     circuloApagado: {
         position: 'absolute',
-        height: 12,  // Asegura que las dimensiones sean iguales
-        width: 12,   // Asegura que las dimensiones sean iguales
-        borderRadius: 6, // La mitad de la altura y el ancho
+        height: 8,  // Asegura que las dimensiones sean iguales
+        width: 8,   // Asegura que las dimensiones sean iguales
+        borderRadius: 4, // La mitad de la altura y el ancho
         top: 0,
-        right: 1,
+        right: 0,
+        backgroundColor: 'transparent', // O el color de fondo que prefieras para cuando no haya notificación
     },
     notificaciones: {
         flex: 1,
@@ -414,3 +414,4 @@ const styles = StyleSheet.create({
         height: 50,
     },
 });
+
