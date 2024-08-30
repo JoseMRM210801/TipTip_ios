@@ -1,9 +1,11 @@
-let baseUrl = 'https://sandbox.paypal.com';
+//let baseUrl = 'https://api.paypal.com';
+let baseUrl = 'https://api.sandbox.paypal.com';
 const base64 = require('base-64');
 
-let clientId = 'ARERv9GgCAdH2290uv7X7P_qtAN5g-2CSVp6rYYmCmMZknIK-m67TNMFE__svnyx2NPxmsN0MApuKSoy';
-let secretKey = 'EIBIa044z75k66I8y3_xFtEU7GGUJvzy1vTjodqXrnjYG0NNCrRs2uQ0jPoSKGNYtwkVQuu3u5A97Dbc';
-
+//let clientId = 'AQl4TzM8BAncjaaZRaaCydJ6NT1RgQay_oKSWzKFgbcXjmPsVinlOONOlCzbxX-8jXWwTBkNtonKctFt';
+//let secretKey = 'EITosbu46w2d-SUYVNv_JqMcMgVmlIeHHR_CSRt6CcO76e-vH9HHlGAglTlY9P87v0tTOsBY2JcsvZh7';
+let clientId =  'ARERv9GgCAdH2290uv7X7P_qtAN5g-2CSVp6rYYmCmMZknIK-m67TNMFE__svnyx2NPxmsN0MApuKSoy';
+let secretKey = 'ECvCfs7B1MUUAhk4HS6lxIgwGp6WHTM8piZqejPvBJ4fNFsv7z4KQDsj5D6vizgj75Caa7mn4y2szJAg';
 
 const generateToken = () => {
     var headers = new Headers()
