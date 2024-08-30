@@ -1,19 +1,18 @@
 import React, { useContext, useEffect, useState } from "react";
-import { BackHandler, Image, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { BackHandler, Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { defaultStyle } from "../Theme/Theme";
 import SvgCuenta from "./SvgCuenta";
 import SvgDatos from "./SvgDatos";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import SvgQr from "./SvgQr";
-import { Usuario } from '../Modelos/Usuario';
 import SvgUsuario from "./SvgUser";
 import SvgDinero from "./SvgDinero";
 import DeviceInfo from "react-native-device-info";
-import SvgFlecha from '../Admin/SvgFlecha';
 import { AppContext } from "../Contexto/AppContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ScrollView } from "react-native-gesture-handler";
+import { Ruta } from "../Ruta/Ruta";
 
 export const InicioRepartidor = () => {
 
@@ -23,72 +22,64 @@ export const InicioRepartidor = () => {
     const contexto = useContext(AppContext);
     const [ingles, setIngles] = useState(contexto.usuario.English);
     const [notificaciones, setNotificaciones] = useState(false);
-    
+    const [initialTips, setInitialTips] = useState<number | null>(null);
+    const [currentTips, setCurrentTips] = useState(0);
+
     useEffect(() => {
         setIngles(ingles);
-    }, [contexto.usuario.English])
-    useEffect(() => { }, [contexto.usuario.Notification])
-    useFocusEffect(
+    }, [contexto.usuario.English]);
 
+    const fetchTips = async () => {
+        try {
+            const response = await fetch(`${Ruta}/tip/delivery/${contexto.usuario.Id}`, {
+                method: 'GET',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': contexto.usuario.Token
+                },
+            });
+            const data = await response.json();
+            const tipsCount = data.length; // Suponiendo que el API devuelve un array con las propinas
+            return tipsCount;
+        } catch (error) {
+            console.error(error);
+            return 0;
+        }
+    };
+
+    const resetNotifications = () => {
+        setInitialTips(currentTips); // Reinicia el contador de propinas
+        setNotificaciones(false); // Restablece el estado de notificaciones
+    };
+
+    useFocusEffect(
         React.useCallback(() => {
-            const onBackPress = () => {
-                // Tu lógica aquí
-                return true;
+            const handleFocus = async () => {
+                const tips = await fetchTips();
+                setCurrentTips(tips);
+
+                if (initialTips === null) {
+                    setInitialTips(tips); // Guarda el número inicial de propinas
+                } else if (tips !== initialTips) {
+                    setNotificaciones(true); // Cambia el color del botón si hay un cambio en las propinas
+                }
             };
 
-            const interval = setInterval(() => {
-                fetch(`https://bett-production.up.railway.app/api/delivery/notifications/${contexto.usuario.Id}`, {
-
-                    method: 'GET',
-                    mode: 'cors',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'token': contexto.usuario.Token
-                    },
-                }).then(res => { return res.json() })
-                    .then(datos => {
-                        if (datos[0].Notification) {
-                            setNotificaciones(true);
-                            // contexto.setUsuario({ ...contexto.usuario, Notification: true });
-                            console.log(datos[0].Notification);
-                        }else{
-                            setNotificaciones(false);
-                        }
-                    })
-                    .catch(error => { console.log(error)  })
-            }, 30000);
-
-            BackHandler.addEventListener('hardwareBackPress', onBackPress);
+            handleFocus();
 
             return () => {
-                clearInterval(interval);
                 BackHandler.removeEventListener('hardwareBackPress', onBackPress);
-            }
-
-        }, [])
+            };
+        }, [initialTips])
     );
-    const idiomaSpanol = {
-        salir: 'Salir',
-        saludo: 'Hola servidor',
-        propuesta: 'Puedes generar tu código QR y empezar a recibir propinas por tu esfuerzo.',
-        boton: 'Genera QR',
-        iconoCuenta: 'Mi cuenta',
-        iconoDatos: "Editar datos",
-        botonDos: 'Dar propina',
-        botonTres: "Probar QR"
-    }
-    const idiomaIngles = {
-        salir: 'Exit',
-        saludo: 'Hello server',
-        propuesta: 'You can generate your QR code and start receiving tips for your effort.',
-        boton: 'Generate QR',
-        iconoCuenta: 'My account',
-        iconoDatos: 'Edit data',
-        botonDos: 'Give tip',
-        botonTres: 'Try QR', 
+
+    const onBackPress = () => {
+        return true;
     };
+
     const salir = async () => {
-        const limpiarUsuario: Usuario = {
+        const limpiarUsuario = {
             Id: "",
             City: "",
             Email: "",
@@ -101,9 +92,8 @@ export const InicioRepartidor = () => {
             State: "",
             Token: "",
             User: ""
-        }
+        };
         contexto.setUsuario(limpiarUsuario);
-        //seria limpiar el local storage 
         try {
             await AsyncStorage.removeItem('email');
             await AsyncStorage.removeItem('password');
@@ -111,9 +101,31 @@ export const InicioRepartidor = () => {
             console.log(error);
         }
         navigate.navigate('Login' as never);
-    }
-    return (
+    };
 
+    const idiomaSpanol = {
+        salir: 'Salir',
+        saludo: 'Hola servidor',
+        propuesta: 'Puedes generar tu código QR y empezar a recibir propinas por tu esfuerzo.',
+        boton: 'Genera QR',
+        iconoCuenta: 'Mi cuenta',
+        iconoDatos: "Editar datos",
+        botonDos: 'Dar propina',
+        botonTres: "Probar QR"
+    };
+
+    const idiomaIngles = {
+        salir: 'Exit',
+        saludo: 'Hello server',
+        propuesta: 'You can generate your QR code and start receiving tips for your effort.',
+        boton: 'Generate QR',
+        iconoCuenta: 'My account',
+        iconoDatos: 'Edit data',
+        botonDos: 'Give tip',
+        botonTres: 'Try QR',
+    };
+
+    return (
         <View style={styles.container}>
             <View style={styles.backgroundImageContainer}>
                 <Image source={fondo} alt="Fondo Tip tip" style={styles.backgroundImage} />
@@ -123,7 +135,7 @@ export const InicioRepartidor = () => {
                     <Text style={styles.textoOpciones}>{ingles ? idiomaIngles.salir : idiomaSpanol.salir}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => {
-                    setIngles(!ingles)
+                    setIngles(!ingles);
                     contexto.setUsuario({ ...contexto.usuario, English: !ingles })
                 }}>
                     <Text style={styles.textoOpciones}>{ingles ? 'Es' : 'En'}</Text>
@@ -134,15 +146,26 @@ export const InicioRepartidor = () => {
             </View>
 
             <View style={styles.saludo}>
-                <Pressable style={(isIOS ? styles.iconoDineroIos : styles.iconoDinero)}   onPress={() => { navigate.navigate('CuentaRepartidor' as never) }}>
+                <Pressable 
+                    style={(isIOS ? styles.iconoDineroIos : styles.iconoDinero)} 
+                    onPress={() => { 
+                        resetNotifications();
+                        navigate.navigate('CuentaRepartidor' as never) 
+                    }}
+                >
                     <View style={{ position: 'relative', height: '100%', width: '100%', overflow: "hidden" }}>
                         <SvgDinero fill={"#fff"} stroke={"#fff"} />
                         <View style={notificaciones ? styles.circulo : styles.circuloApagado}></View>
                     </View>
                 </Pressable>
 
-                <Pressable style={(isIOS ? styles.iconoRojoIos : styles.iconoRojo)}
-                  onPress={() => { navigate.navigate('TerminosyCondiciones' as never) }}>
+                <Pressable 
+                    style={(isIOS ? styles.iconoRojoIos : styles.iconoRojo)} 
+                    onPress={() => { 
+                        resetNotifications();
+                        navigate.navigate('TerminosyCondiciones' as never) 
+                    }}
+                >
                     <View style={{ position: 'relative', height: '100%', width: '100%' }}>
                         <SvgUsuario fill={"#fff"} stroke={"#fff"} />
                         <View style={notificaciones ? styles.circulo : styles.circuloApagado}></View>
@@ -154,7 +177,6 @@ export const InicioRepartidor = () => {
                 start={{ x: 0, y: 0.5 }}
                 end={{ x: 1, y: 1.5 }}
                 style={styles.containerInfo}>
-
 
                 <ScrollView style={styles.ScrollView} contentContainerStyle={{ alignItems: 'center' }}>
                     <Text style={styles.textoCliente}>{contexto.usuario.Name} {contexto.usuario.LastName}</Text>
@@ -206,8 +228,9 @@ export const InicioRepartidor = () => {
                 </ScrollView>
             </LinearGradient>
         </View>
-    )
+    );
 }
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -362,24 +385,23 @@ const styles = StyleSheet.create({
         width: 40,
         right: 70,
         top: 5,
-        borderRadius: 100,
-        zIndex: 100
+        borderRadius: 100
     },
     circulo: {
         position: 'absolute',
-        height: 10,
-        width: 10,
+        height: 12,  // Asegura que las dimensiones sean iguales
+        width: 12,   // Asegura que las dimensiones sean iguales
         backgroundColor: "red",
-        borderRadius: 50,
+        borderRadius: 6, // La mitad de la altura y el ancho
         top: 0,
         right: 1,
         overflow: 'hidden',
     },
     circuloApagado: {
         position: 'absolute',
-        height: 10,
-        width: 10,
-        borderRadius: 50,
+        height: 12,  // Asegura que las dimensiones sean iguales
+        width: 12,   // Asegura que las dimensiones sean iguales
+        borderRadius: 6, // La mitad de la altura y el ancho
         top: 0,
         right: 1,
     },
@@ -391,5 +413,4 @@ const styles = StyleSheet.create({
         width: '100%',
         height: 50,
     },
-
 });

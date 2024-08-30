@@ -13,6 +13,7 @@ import DeviceInfo from 'react-native-device-info';
 import { IEstados } from '../Modelos/Estados';
 import { CustomSelect } from '../modules/personalizedComponent.tsx'
 import { ICiudades } from '../Modelos/Ciudades';
+import { Ruta } from '../Ruta/Ruta';
 
 export const DatosCliente = () => {
     const fondo: any = require("../../assets/Fondo-Tiptip-01.jpg");
@@ -67,7 +68,7 @@ export const DatosCliente = () => {
 
 
     const ActualizarUsuario = async (usuario: Usuario) => {
-        fetch('https://bett-production.up.railway.app/api/client/update', {
+        fetch(`${Ruta}/client/update`, {
             // fetch('http://192.168.0.7:8090/api/client/update', {
 
             method: 'POST',
@@ -92,7 +93,7 @@ export const DatosCliente = () => {
 
     const getStates = async () => {
         try {
-            const response = await fetch('https://bett-production.up.railway.app/api/states', {
+            const response = await fetch(`${Ruta}/states`, {
                 method: 'GET',
                 mode: 'cors',
                 headers: {
@@ -127,7 +128,7 @@ export const DatosCliente = () => {
     const getCities = async () => {
         try {
             if (selectedEstado) {
-                const response = await fetch(`https://bett-production.up.railway.app/api/city/${selectedEstado}`, {
+                const response = await fetch(`${Ruta}/city/${selectedEstado}`, {
                     method: 'GET',
                     mode: 'cors',
                     headers: {

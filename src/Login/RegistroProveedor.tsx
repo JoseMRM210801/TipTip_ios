@@ -14,6 +14,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { IEstados } from '../Modelos/Estados';
 import { CustomSelect } from '../modules/personalizedComponent';
 import { ICiudades } from '../Modelos/Ciudades';
+import { Ruta } from '../Ruta/Ruta';
 
 export const RegistroProveedor = () => {
     const fondo: any = require("../../assets/Fondo-Tiptip-01.jpg");
@@ -82,7 +83,7 @@ export const RegistroProveedor = () => {
     const [selectedValue, setSelectedValue] = useState('');
 
     const insertarRepartidor = async (nuevoRepartidor: IDelivery) => {
-        fetch('https://bett-production.up.railway.app/api/delivery/signin', {
+        fetch(`${Ruta}/delivery/signin`, {
             method: 'POST',
             mode: 'cors',
             headers: {
@@ -105,7 +106,7 @@ export const RegistroProveedor = () => {
 
     const getStates = async () => {
         try {
-            const response = await fetch('https://bett-production.up.railway.app/api/states', {
+            const response = await fetch(`${Ruta}/states`, {
                 method: 'GET',
                 mode: 'cors',
                 headers: {
@@ -140,7 +141,7 @@ export const RegistroProveedor = () => {
     const getCities = async () => {
         try {
             if (selectedEstado) {
-                const response = await fetch(`https://bett-production.up.railway.app/api/city/${selectedEstado}`, {
+                const response = await fetch(`${Ruta}/city/${selectedEstado}`, {
                     method: 'GET',
                     mode: 'cors',
                     headers: {

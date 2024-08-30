@@ -10,6 +10,7 @@ import DeviceInfo from 'react-native-device-info';
 import SvgFlecha from '../Admin/SvgFlecha';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import logoImage from '../../assets/Logo-Tiptip-02.png';
+import { Ruta } from '../Ruta/Ruta';
 
 export const PantallaQr = () => {
     const fondo = require("../../assets/Fondo-Tiptip-01.jpg");
@@ -79,7 +80,7 @@ export const PantallaQr = () => {
 
     const PDF = async () => {
         try {
-            const response = await fetch('https://bett-production.up.railway.app/api/qr/mail', {
+            const response = await fetch(`${Ruta}/qr/mail`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -7,6 +7,7 @@ import DeviceInfo from 'react-native-device-info';
 import SvgFlecha from '../Admin/SvgFlecha';
 import { AppContext } from '../Contexto/AppContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ruta } from '../Ruta/Ruta';
 export const ClienteCuenta = () => {
     const fondo: any = require("../../assets/Fondo-Tiptip-01.jpg");
     const navigate = useNavigation();
@@ -36,7 +37,7 @@ export const ClienteCuenta = () => {
         pie: 'Scan the provider\'s QR code'
     };
     useEffect(() => {
-        fetch(`https://bett-production.up.railway.app/api/tip/client/${contexto.usuario.Id}`, {
+        fetch(`${Ruta}/tip/client/${contexto.usuario.Id}`, {
           method: 'GET',
           mode: 'cors',
           headers: {

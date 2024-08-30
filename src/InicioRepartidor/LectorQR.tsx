@@ -8,6 +8,7 @@ import { View } from 'react-native';
 import { Text } from 'react-native-svg';
 import DeviceInfo from 'react-native-device-info';
 import { AppContext } from '../Contexto/AppContext';
+import { Ruta } from '../Ruta/Ruta';
 
 
 
@@ -18,7 +19,7 @@ export const LectorQR = () => {
   const ResultQR = (value: string) => {
     try {
       console.log(value);
-      fetch(`https://bett-production.up.railway.app/api/delivery/user/${value}`, {
+      fetch(`${Ruta}/delivery/user/${value}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
