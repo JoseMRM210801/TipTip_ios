@@ -45,7 +45,7 @@ export const AccionesAdmin = () => {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
                     'token': contexto.usuario.Token
-                },
+                 },
                 body: JSON.stringify(enemail)
             });
             const responseJson = await response.json();
@@ -289,9 +289,7 @@ export const AccionesAdmin = () => {
                             }
                         </TouchableOpacity>
                         <Text style={styles.textoInferior}>{ingles ? idiomaIngles.textoInferiorProveedor : idiomaSpanol.textoInferiorProveedor}</Text>
-
                         <TouchableOpacity
-
                             style={{ padding: 10, backgroundColor: '#e8e8e8e', borderRadius: 8, width: '90%', marginTop: 12, borderWidth: 1, borderColor: '#212121' }}>
                             <Text style={{ color: '#303030', textAlign: 'center', fontSize: 22, fontFamily: defaultStyle.fontGeneral.fontFamily }}>
                                 {ingles ? idiomaIngles.btnEliminar : idiomaSpanol.btnEliminar}
@@ -353,9 +351,7 @@ export const AccionesAdmin = () => {
                                     setDate2(date)
                                 }}
                                 onCancel={() => setShowDate2(false)}
-
                             />
-
                             <TouchableOpacity
                                 style={styles.modalButton}
                                 onPress={() => {
@@ -375,8 +371,6 @@ export const AccionesAdmin = () => {
                             </TouchableOpacity>
                         </View>
                     </Modal>
-
-
                     <Modal
                         animationType="slide"
                         transparent={true}
@@ -384,7 +378,6 @@ export const AccionesAdmin = () => {
                         onRequestClose={() => {
                             setModalVisible(!modalVisible);
                         }}>
-
                         <View style={styles.modalContainer}>
                             <Text style={styles.modalText}>Se ha enviado el archivo a tu correo</Text>
                             <TouchableOpacity
@@ -404,7 +397,6 @@ export const AccionesAdmin = () => {
                         onRequestClose={() => {
                             setModalRestaurar(!modalRestaurar);
                         }}>
-
                         <View style={styles.modalContainer}>
                             <Text style={styles.modalText}>Restauración exitosa</Text>
                             <TouchableOpacity

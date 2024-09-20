@@ -54,7 +54,7 @@ export const RevisionPropinas = () => {
                     setTotal(totalAuxiliar);
 
                     //agregamos el encabezado 
-                    datos.unshift(['#', 'Cliente', '$', 'Proveedor', 'Fecha']);
+                    datos.unshift(['#', 'Cliente', '$','Comision Paypal', 'Proveedor', 'Fecha']);
                     //tenemos la informacion completa a mostrar
                     setData(datos);
                     //tenemos una division adecuada de las columnas
@@ -119,7 +119,7 @@ export const RevisionPropinas = () => {
                                 ))}
                         </View>
                     </ScrollView>
-                    <Text style={{ color: '#303030', alignSelf: 'flex-start', padding: 12, fontSize: 20 }}>{ingles ? idiomaIngles.propuesta : idiomaSpanol.propuesta} {total} Dls</Text>
+                    <Text style={{ color: '#303030', alignSelf: 'flex-start', padding: 12, fontSize: 20 }}>{ingles ? idiomaIngles.propuesta : idiomaSpanol.propuesta} {total.toFixed(2)} Dls</Text>
                 </LinearGradient>
             </ImageBackground >
         </View >

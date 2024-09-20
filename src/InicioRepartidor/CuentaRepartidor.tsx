@@ -89,7 +89,7 @@ export const CuentaRepartidor = () => {
     .then(res => res.json())
     .then(datos => {
       if (datos) {
-        const headers = ingles ? ['#', 'Client', '$', 'Date'] : ['#', 'Cliente', '$', 'Fecha'];
+        const headers = ingles ? ['#', 'Client', '$','Paypal Commission', 'TipTip Commission', 'Date'] : ['#', 'Cliente', '$','Comision Paypal','Comision TipTip', 'Fecha'];
         datos.unshift(headers); // Agrega el encabezado adecuado al principio de los datos
         setData(datos);
         setCellWidth(Dimensions.get('window').width / 4); // Ajusta el ancho de las celdas

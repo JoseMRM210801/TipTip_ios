@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { Image, StyleSheet, Text, TextInput, View, ScrollView, ImageBackground, TouchableOpacity, Modal } from 'react-native'
+import React, { useContext, useEffect, useState } from 'react';
+import { Image, StyleSheet, Text, TextInput, View, ScrollView, ImageBackground, TouchableOpacity, Modal } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import WebView from 'react-native-webview';
 import queryString from 'query-string';
@@ -11,6 +11,7 @@ import paypalApi from './paypalApi';
 import { Loader } from '../Loader/Loader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ruta } from '../Ruta/Ruta';
+
 export const BotonPropina = () => {
     const fondo = require("../../assets/Fondo-Tiptip-01.jpg");
     const boton1 = require("../../assets/Boton-especial-01.png");
@@ -22,108 +23,88 @@ export const BotonPropina = () => {
     const [ingles, setIngles] = useState(contexto.usuario.English);
     useEffect(() => {
         setIngles(contexto.usuario.English);
-    }, [contexto.usuario.English])
+    }, [contexto.usuario.English]);
     const [codigo, setCodigo] = useState("");
     const [idDelivery, setIdDelivery] = useState(0);
     const route = useRoute();
     const { value } = route.params;
-    const [paypalUrl, setPaypalUrl] = useState(null)
-    const [accessToken, setAccessToken] = useState(null)
-    const [isLoaded, setIsLoaded] = useState(false)
+    const [paypalUrl, setPaypalUrl] = useState(null);
+    const [accessToken, setAccessToken] = useState(null);
+    const [isLoaded, setIsLoaded] = useState(false);
+
     const onPressPaypal = async () => {
-    
         const token = await paypalApi.generateToken(contexto.usuario.Token);
         const res = await paypalApi.createOrder(token, contador);
         console.log("res", res);
-        console.log("token", token)
+        console.log("token", token);
         setAccessToken(token);
         if (res.links) {
             const findUrl = res.links.find((data) => data?.rel == "approve");
             setPaypalUrl(findUrl.href);
         }
-    }
-    
+    };
+
     const onUrlChange = (webviewState) => {
         if (webviewState.url.includes('https://example.com/cancel')) {
-            clearPaypalState()
+            clearPaypalState();
             return;
         }
         if (webviewState.url.includes('https://example.com/return')) {
-            const urlValues = queryString.parseUrl(webviewState.url)
-            const { token } = urlValues.query
+            const urlValues = queryString.parseUrl(webviewState.url);
+            const { token } = urlValues.query;
             if (token) {
-                paymentSucess(token)
+                paymentSucess(token);
             }
         }
-    }
+    };
+
+    const calcularComision = (contador,res) => {
+        
+
+        const comision = contador-res;
+   
+        return { comision };
+    };
 
     const paymentSucess = async (id) => {
         try {
-            const res = await paypalApi.capturePayment(id, accessToken || "", contexto.usuario.Token)
-            if (res != 'error') {
+            const res = await paypalApi.capturePayment(id, accessToken || "", contexto.usuario.Token);
+            if (res !== 'error') {
+                // Calcular la comisión y el valor neto después de la comisión
+                const {  comision } = calcularComision(contador, res);
+                
                 fetch(`${Ruta}/tip/add`, {
                     method: 'POST',
                     mode: 'cors',
                     headers: {
                         'Content-Type': 'application/json',
-                        'token': contexto.usuario.Token
+                        'token': contexto.usuario.Token,
                     },
                     body: JSON.stringify({
                         client_Id: contexto.usuario.Id,
                         delivery_Id: idDelivery,
-                        Donated: res,
-                    })
+                        Donated: res, // Valor neto después de la comisión
+                        paypal: comision,        // Valor total donado
+                        comision: comision, // Comisión de PayPal
+                    }),
                 })
-                    .then((response) => response.json())
-                    .then((json) => {
-                        fetch(`${Ruta}/delivery/notifications/`, {
-                            method: 'PUT',
-                            mode: 'cors',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'token': contexto.usuario.Token
-                            },
-                            body: JSON.stringify({
-                                "id": idDelivery,
-                                "state": 1
-                            })
-                        }).then(res => { return res.json() })
-                            .then(datos => {
-                                contexto.setUsuario({ ...contexto.usuario, Notification: !contexto.usuario.Notification });
-                            })
-                        navigate.navigate('PantallaExito');
-                    })
-                    .catch((error) => {
-                        console.error(error);
-                    });
+                .then((response) => response.json())
+                navigate.navigate('PantallaExito');
             }
-            clearPaypalState()
-
+            clearPaypalState();
         } catch (error) {
-            console.log(id)
-            console.log("error raised in payment capture", error)
+            console.log(id);
+            console.log("error raised in payment capture", error);
+          
         }
-    }
-
+    };
 
     const clearPaypalState = () => {
-        setPaypalUrl(null)
-        setAccessToken(null)
-        setIsLoaded(false)
-    }
-
-    const idiomaIngles = {
-        salir: 'Exit',
-        pregunta: 'Did you like the provided service?',
-        propuesta: `Your ${codigo} supplier receives`,
+        setPaypalUrl(null);
+        setAccessToken(null);
+        setIsLoaded(false);
     };
-    const idiomaSpanol = {
-        salir: 'Salir',
-        pregunta: '¿Cuánto quieres dar de propina?',
-        propuesta: `Tu proveedor ${codigo} recibe`,
-    }
-    let valorInput = "";
-    const navigate = useNavigation();
+
     const handlePress = () => {
         setIsPressed(false);
         setContador(contador + 1);
@@ -131,16 +112,17 @@ export const BotonPropina = () => {
         const sound = new Sound('coin.mp3', Sound.MAIN_BUNDLE, (error) => {
             if (error) {
                 console.error('Error al cargar el sonido', error);
-                return;
+                return; 
             }
             sound.play(() => {
                 sound.release();
             });
         });
         setTimeout(() => {
-            setIsPressed(true)
-        }, 50)
+            setIsPressed(true);
+        }, 50);
     };
+
     const handlePressB = () => {
         setContador(contador + 1);
         let Sound = require('react-native-sound');
@@ -154,9 +136,11 @@ export const BotonPropina = () => {
             });
         });
     };
+
     const handleRating = (value) => {
         setRating(value);
     };
+
     const salir = async () => {
         const limpiarUsuario = {
             Id: "",
@@ -170,8 +154,8 @@ export const BotonPropina = () => {
             Role_Id: "",
             State: "",
             Token: "",
-            User: ""
-        }
+            User: "",
+        };
         contexto.setUsuario(limpiarUsuario);
         try {
             await AsyncStorage.removeItem('email');
@@ -180,10 +164,7 @@ export const BotonPropina = () => {
             console.log(error);
         }
         navigate.navigate('Login');
-    }
-
-    const stars = ['☆', '☆', '☆', '☆', '☆'];
-    const starsFill = ['★', '★', '★', '★', '★'];
+    };
 
     useEffect(() => {
         fetch(`${Ruta}/delivery/user/${value}`, {
@@ -191,8 +172,8 @@ export const BotonPropina = () => {
                 mode: 'cors',
                 headers: {
                     'Content-Type': 'application/json',
-                    'token': contexto.usuario.Token
-                }
+                    'token': contexto.usuario.Token,
+                },
             })
             .then((response) => response.json())
             .then((json) => {
@@ -202,29 +183,28 @@ export const BotonPropina = () => {
             .catch((error) => {
                 console.error('pipipi');
             });
-    }, [])
+    }, []);
 
     return (
         <View style={styles.centrado}>
             <ImageBackground
                 source={fondo}
-                resizeMode='cover'
-                style={styles.backgroundImageContainer}>
-
+                resizeMode="cover"
+                style={styles.backgroundImageContainer}
+            >
                 <View style={styles.contenedorOpciones}>
                     <TouchableOpacity
                         onPress={() => { navigate.goBack(); }}
-                        style={[styles.textoOpciones, styles.flecha]}>
+                        style={[styles.textoOpciones, styles.flecha]}
+                    >
                         <SvgFlecha />
                     </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => { salir() }}
-                    >
-                        <Text style={styles.textoOpciones}>{ingles ? idiomaIngles.salir : idiomaSpanol.salir}</Text>
+                    <TouchableOpacity onPress={() => { salir(); }}>
+                        <Text style={styles.textoOpciones}>{ingles ? 'Exit' : 'Salir'}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => {
-                        setIngles(!ingles)
-                        contexto.setUsuario({ ...contexto.usuario, English: !ingles })
+                        setIngles(!ingles);
+                        contexto.setUsuario({ ...contexto.usuario, English: !ingles });
                     }}>
                         <Text style={styles.textoOpciones}>{ingles ? 'Es' : 'En'}</Text>
                     </TouchableOpacity>
@@ -237,10 +217,11 @@ export const BotonPropina = () => {
                     colors={['rgba(255,255,255,1)', 'rgba(222,222,222,1)', 'rgba(255,255,255,1)']}
                     start={{ x: 0, y: 0.5 }}
                     end={{ x: 1, y: 1.5 }}
-                    style={styles.contenedorBoton}>
+                    style={styles.contenedorBoton}
+                >
                     <ScrollView style={{ width: '90%' }}>
-                        <Text style={styles.textoPregunta}>{ingles ? idiomaIngles.pregunta : idiomaSpanol.pregunta}</Text>
-                        <Text style={styles.textoNormal}>{ingles ? idiomaIngles.propuesta : idiomaSpanol.propuesta}</Text>
+                        <Text style={styles.textoPregunta}>{ingles ? 'Did you like the provided service?' : '¿Cuánto quieres dar de propina?'}</Text>
+                        <Text style={styles.textoNormal}>{ingles ? `Your ${codigo} supplier receives` : `Tu proveedor ${codigo} recibe`}</Text>
                         <TouchableOpacity
                             style={styles.buttonEspecial}
                             onPress={handlePress}
@@ -251,30 +232,28 @@ export const BotonPropina = () => {
                             />
                         </TouchableOpacity>
 
-
                         <View style={styles.contenedorEstrellas}>
                             {
-                                stars.map((star, idx) => {
-                                    return (
-                                        <TouchableOpacity
-                                            key={idx}
-                                            onPress={() => handleRating(idx)}
-                                            activeOpacity={0.7}
-                                        >
-                                            <Text style={rating >= idx ? styles.estrellaLlena : styles.estrellaVacia}>{rating >= idx ? starsFill[idx] : star}</Text>
-                                        </TouchableOpacity>
-                                    )
-                                })
+                                ['☆', '☆', '☆', '☆', '☆'].map((star, idx) => (
+                                    <TouchableOpacity
+                                        key={idx}
+                                        onPress={() => handleRating(idx)}
+                                        activeOpacity={0.7}
+                                    >
+                                        <Text style={rating >= idx ? styles.estrellaLlena : styles.estrellaVacia}>
+                                            {rating >= idx ? '★' : star}
+                                        </Text>
+                                    </TouchableOpacity>
+                                ))
                             }
                         </View>
 
                         <View style={styles.contenedorBotones}>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    if (contador > 0) {
-                                        setContador(contador - 1);
-                                    }
-                                }}>
+                            <TouchableOpacity onPress={() => {
+                                if (contador > 0) {
+                                    setContador(contador - 1);
+                                }
+                            }}>
                                 <LinearGradient
                                     colors={['rgba(255,255,255,1)', 'rgba(222,222,222,1)', 'rgba(255,255,255,1)']}
                                     start={{ x: 0, y: 0.5 }}
@@ -290,105 +269,80 @@ export const BotonPropina = () => {
                                     placeholderTextColor="#282828"
                                     style={styles.inputNumero}
                                     keyboardType="numeric"
-                                    onChangeText={(value) => {
-                                        valorInput = value;
-                                    }}
-                                    onBlur={() => {
-                                        setContador(parseInt(valorInput, 10) || contador);
-                                    }}
+                                    onChangeText={(value) => setContador(parseInt(value, 10) || contador)}
                                 />
                                 <Text style={{ fontSize: 18, marginTop: 15, color: '#282828' }}>dls</Text>
                             </View>
-                            <TouchableOpacity
-                                onPress= { handlePressB }
-                                style={[styles.botonesInput, styles.botonMas]}>
+                            <TouchableOpacity onPress={handlePressB} style={[styles.botonesInput, styles.botonMas]}>
                                 <Text style={[styles.buttonText, { color: '#fff' }]}>+</Text>
                             </TouchableOpacity>
                         </View>
+
                         <TouchableOpacity
                             isdisabled={isLoaded}
-                            onPress={() => { onPressPaypal() }}
-                            style={{ margin: 5, padding: 10, backgroundColor: 'rgb(212,46,46)', borderRadius: 8, width: '100%', marginTop: 60 }}>
+                            onPress={onPressPaypal}
+                            style={{ margin: 5, padding: 10, backgroundColor: 'rgb(212,46,46)', borderRadius: 8, width: '100%', marginTop: 60 }}
+                        >
                             {
                                 isLoaded
-                                    ?
-                                    <Loader />
-                                    :
-                                    <Text style={{ color: 'white', textAlign: 'center', fontSize: 22, fontFamily: defaultStyle.fontGeneral.fontFamily }}>{ingles ? 'ACCEPT!' : '¡ACEPTAR!'}</Text>
+                                    ? <Loader />
+                                    : <Text style={{ color: 'white', textAlign: 'center', fontSize: 22, fontFamily: defaultStyle.fontGeneral.fontFamily }}>{ingles ? 'ACCEPT!' : '¡ACEPTAR!'}</Text>
                             }
                         </TouchableOpacity>
                     </ScrollView>
                 </LinearGradient>
             </ImageBackground>
 
-            <Modal
-                visible={!!paypalUrl}
-                style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.5)'}}
-            >
-                <View style={{ paddingTop: 50, flex: 1 }}> 
-                    <TouchableOpacity
-                        onPress={clearPaypalState}
-                        style={{ margin: 24 }}
-                    >
+            <Modal visible={!!paypalUrl} style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                <View style={{ paddingTop: 50, flex: 1 }}>
+                    <TouchableOpacity onPress={clearPaypalState} style={{ margin: 24 }}>
                         <Text>Closed</Text>
                     </TouchableOpacity>
                     <View style={{ flex: 1 }}>
-                        <WebView
-                            source={{ uri: paypalUrl ?? "" }}
-                            onNavigationStateChange={onUrlChange}
-                        />
+                        <WebView source={{ uri: paypalUrl ?? "" }} onNavigationStateChange={onUrlChange} />
                     </View>
-                    {/* Botón para cerrar el modal */}
-                    <TouchableOpacity
-                        onPress={clearPaypalState}
-                        style={styles.cerrarBotonContainer}
-                    >
+                    <TouchableOpacity onPress={clearPaypalState} style={styles.cerrarBotonContainer}>
                         <Text style={styles.cerrarBotonTexto}>Cerrar</Text>
                     </TouchableOpacity>
                 </View>
             </Modal>
-
         </View>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     centrado: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     backgroundImageContainer: {
         height: '100%',
         width: '100%',
         justifyContent: 'center',
-        alignItems: 'center'
-    },
-    backgroundImage: {
-        width: '100%',
-        height: '100%',
+        alignItems: 'center',
     },
     buttonEspecial: {
         width: '100%',
         height: 200,
         borderWidth: 0,
         marginTop: 10,
-        alignItems: 'center'
+        alignItems: 'center',
     },
     botonesInput: {
         width: 80,
         height: '100%',
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 6
+        borderRadius: 6,
     },
     buttonText: {
         color: '#282828',
         fontSize: 30,
-        padding: 10
+        padding: 10,
     },
     botonMas: {
-        backgroundColor: 'rgb(212,46,46)'
+        backgroundColor: 'rgb(212,46,46)',
     },
     inputNumero: {
         borderWidth: 2,
@@ -398,19 +352,19 @@ const styles = StyleSheet.create({
         width: '100%',
         textAlign: 'center',
         fontSize: 28,
-        fontWeight: '800'
+        fontWeight: '800',
     },
     contenedorBotones: {
         flexDirection: 'row',
         width: '100%',
         justifyContent: 'space-around',
-        height: '10%'
+        height: '10%',
     },
     contenedorEstrellas: {
         flexDirection: 'row',
         width: '100%',
         justifyContent: 'center',
-        marginTop: 15
+        marginTop: 15,
     },
     contenedorBoton: {
         marginTop: 20,
@@ -426,19 +380,19 @@ const styles = StyleSheet.create({
         color: '#001d38',
         textAlign: 'center',
         padding: 30,
-        width: '100%'
+        width: '100%',
     },
     textoNormal: {
         fontSize: 20,
-        color: '#001d38'
+        color: '#001d38',
     },
     estrellaLlena: {
         color: '#ff9933',
-        fontSize: 40
+        fontSize: 40,
     },
     estrellaVacia: {
         color: '#ff9933',
-        fontSize: 40
+        fontSize: 40,
     },
     contenedorOpciones: {
         position: 'absolute',
@@ -448,21 +402,7 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         width: '100%',
         paddingRight: 20,
-        paddingTop: 5
-    },
-    textoOpcionesF: {
-        color: 'rgb(212,46,46)',
-        fontSize: 18,
-        paddingHorizontal: 8,
-        backgroundColor: "#fff",
-        marginTop: 4,
-        borderRadius: 4
-    },
-    flecha: {
-        position: 'absolute',
-        left: 10,
-        top:10,
-        paddingTop: 5
+        paddingTop: 5,
     },
     textoOpciones: {
         color: 'rgb(212,46,46)',
@@ -470,7 +410,13 @@ const styles = StyleSheet.create({
         paddingHorizontal: 8,
         backgroundColor: "#fff",
         marginTop: 4,
-        borderRadius: 4
+        borderRadius: 4,
+    },
+    flecha: {
+        position: 'absolute',
+        left: 10,
+        top: 10,
+        paddingTop: 5,
     },
     cerrarBotonContainer: {
         padding: 10,
