@@ -507,7 +507,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 42;
 				DEVELOPMENT_TEAM = 7CCQ8CBHH6;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = TipTipForTheServices/Info.plist;
@@ -516,7 +516,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 42;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -536,7 +536,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 42;
 				DEVELOPMENT_TEAM = 7CCQ8CBHH6;
 				INFOPLIST_FILE = TipTipForTheServices/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Tip Tip For The Services";
@@ -544,7 +544,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 42;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
