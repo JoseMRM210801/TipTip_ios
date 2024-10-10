@@ -20,6 +20,7 @@ export const BotonPropina = () => {
     const [isPressed, setIsPressed] = useState(true);
     const [contador, setContador] = useState(1);
     const contexto = useContext(AppContext);
+    const navigate = useNavigation();
     const [ingles, setIngles] = useState(contexto.usuario.English);
     useEffect(() => {
         setIngles(contexto.usuario.English);
@@ -194,7 +195,7 @@ export const BotonPropina = () => {
             >
                 <View style={styles.contenedorOpciones}>
                     <TouchableOpacity
-                        onPress={() => { navigate.goBack(); }}
+                        onPress={() => { navigate.navigate("InicioCliente"); }}
                         style={[styles.textoOpciones, styles.flecha]}
                     >
                         <SvgFlecha />
@@ -286,8 +287,13 @@ export const BotonPropina = () => {
                             {
                                 isLoaded
                                     ? <Loader />
-                                    : <Text style={{ color: 'white', textAlign: 'center', fontSize: 22, fontFamily: defaultStyle.fontGeneral.fontFamily }}>{ingles ? 'ACCEPT!' : '¡ACEPTAR!'}</Text>
+                                    : <Text style={{ color: 'white', textAlign: 'center', fontSize: 22, fontFamily: defaultStyle.fontGeneral.fontFamily }}>{ingles ? 'Send Tip!' : '¡Enviar Propina!'}</Text>
                             }
+                        </TouchableOpacity>
+                        <TouchableOpacity   
+                            onPress={() => { navigate.navigate('InicioCliente'); }}
+                        >
+                            <Text style={styles.textoCancelar}>{ingles ? 'Cancel' : 'Cancelar'}</Text>
                         </TouchableOpacity>
                     </ScrollView>
                 </LinearGradient>
@@ -316,6 +322,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    textoCancelar: {
+        color: 'red', 
+        textAlign: 'center', 
+        fontSize: 15, 
+        fontFamily: defaultStyle.fontGeneral.fontFamily,
+        textDecorationLine: 'underline', // Subrayado
+    },
+    
     backgroundImageContainer: {
         height: '100%',
         width: '100%',
@@ -358,7 +372,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         width: '100%',
         justifyContent: 'space-around',
-        height: '10%',
+        height: '8%',
     },
     contenedorEstrellas: {
         flexDirection: 'row',
