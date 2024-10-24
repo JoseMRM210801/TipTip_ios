@@ -45,6 +45,7 @@ export const BotonPropina = () => {
         }
     };
 
+
     const onUrlChange = (webviewState) => {
         if (webviewState.url.includes('https://example.com/cancel')) {
             clearPaypalState();
@@ -58,6 +59,7 @@ export const BotonPropina = () => {
             }
         }
     };
+    console.log("Servicio", contexto.usuario.Id);
 
     const calcularComision = (contador,res) => {
         
@@ -66,14 +68,47 @@ export const BotonPropina = () => {
    
         return { comision };
     };
-
+    console.log("Provedor",contexto.usuario.User)
+    console.log("es cliente",contexto.usuario.Id)
+    // const paymentSucess = async (id) => {
+    //     try {
+    //         const res = await paypalApi.capturePayment(id, accessToken || "", contexto.usuario.Token);
+    //         if (res !== 'error') {
+    //             // Calcular la comisión y el valor neto después de la comisión
+    //             const {  comision } = calcularComision(contador, res);
+                
+    //             fetch(`${Ruta}/tip/add`, {
+    //                 method: 'POST',
+    //                 mode: 'cors',
+    //                 headers: {
+    //                     'Content-Type': 'application/json',
+    //                     'token': contexto.usuario.Token,
+    //                 },
+    //                 body: JSON.stringify({
+    //                     client_Id: contexto.usuario.Id,
+    //                     delivery_Id: idDelivery,
+    //                     Donated: res, // Valor neto después de la comisión
+    //                     paypal: comision,        // Valor total donado
+    //                     comision: comision, // Comisión de PayPal
+    //                 }),
+    //             })
+    //             .then((response) => response.json())
+    //             navigate.navigate('PantallaExito');
+    //         }
+    //         clearPaypalState();
+    //     } catch (error) {
+    //         console.log(id);
+    //         console.log("error raised in payment capture", error);
+          
+    //     }
+    // };
     const paymentSucess = async (id) => {
         try {
             const res = await paypalApi.capturePayment(id, accessToken || "", contexto.usuario.Token);
             if (res !== 'error') {
                 // Calcular la comisión y el valor neto después de la comisión
                 const {  comision } = calcularComision(contador, res);
-                
+                const provedorId = contexto.usuario.Occupation ? 11: contexto.usuario.Id;
                 fetch(`${Ruta}/tip/add`, {
                     method: 'POST',
                     mode: 'cors',
@@ -82,11 +117,12 @@ export const BotonPropina = () => {
                         'token': contexto.usuario.Token,
                     },
                     body: JSON.stringify({
-                        client_Id: contexto.usuario.Id,
+                        client_Id: provedorId,
                         delivery_Id: idDelivery,
                         Donated: res, // Valor neto después de la comisión
                         paypal: comision,        // Valor total donado
                         comision: comision, // Comisión de PayPal
+                        userprovider:contexto.usuario.User
                     }),
                 })
                 .then((response) => response.json())
@@ -99,7 +135,6 @@ export const BotonPropina = () => {
           
         }
     };
-
     const clearPaypalState = () => {
         setPaypalUrl(null);
         setAccessToken(null);

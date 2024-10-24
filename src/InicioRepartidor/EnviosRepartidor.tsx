@@ -1,84 +1,117 @@
-import React, { useEffect, useState, useContext } from 'react'
-import { Dimensions, ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { useRoute, useNavigation } from '@react-navigation/native';
-import { AppContext } from '../Contexto/AppContext';
+import { useNavigation } from '@react-navigation/native';
+import React, { useContext, useEffect, useState } from 'react';
+import { Dimensions, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
-import { defaultStyle } from '../Theme/Theme';
-import SvgFlecha from './SvgFlecha';
-import {Ruta} from '../Ruta/Ruta';
-export const DetallesPropinasCliente = () => {
-    const route = useRoute();
-    const [data, setData] = useState();
-    const fondo = require("../../assets/Fondo-Tiptip-01.jpg");
+import DeviceInfo from 'react-native-device-info';
+import SvgFlecha from '../Admin/SvgFlecha';
+import { AppContext } from '../Contexto/AppContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+export const EnviosRepartidor = () => {
+    const fondo: any = require("../../assets/Fondo-Tiptip-01.jpg");
+    const navigate = useNavigation();
     const contexto = useContext(AppContext);
     const [ingles, setIngles] = useState(contexto.usuario.English);
+    
     useEffect(() => {
         setIngles(contexto.usuario.English);
-    }, [contexto.usuario.English])
+    }, [contexto.usuario.English]);
+
+    const isIOS = DeviceInfo.getSystemName() === 'iOS';
+    const [data, setData] = useState([]);
     const [cellWidth, setCellWidth] = useState(0);
-    const navigation = useNavigation();
 
     const idiomaSpanol = {
         salir: 'Salir',
-        saludo: "Hola administrador",
+        saludo: "Hola Cliente",
+        subtitulo: 'Movimientos',
         pregunta: '¿Te ha gustado el servicio prestado?',
         propuesta: '¿Quieres dar 1 dls?',
         pie: 'Escanea el QR del proveedor'
-    }
+    };
+    
     const idiomaIngles = {
         salir: 'Exit',
         saludo: "Hello client",
+        subtitulo: 'Movements',
         pregunta: 'Did you like the provided service?',
         propuesta: 'Do you want to give $1?',
         pie: 'Scan the provider\'s QR code'
     };
-    useEffect(() => {
-        const id = route.params?.id;
-        // fetch(`https://bett-production.up.railway.app/api/tip/client/${id}`, {
-            fetch(`${Ruta}/tip/client/${id}`, {
 
+    useEffect(() => {
+        const userName = contexto.usuario.User; // Obtenemos el nombre del usuario del contexto
+        const apiUrl = `http://192.168.1.14:8090/api/tip/providerprovider/${userName}`;
+        
+        fetch(apiUrl, {
             method: 'GET',
             mode: 'cors',
             headers: {
                 'Content-Type': 'application/json',
                 'token': contexto.usuario.Token
             }
-        }).then(res => { return res.json() })
-            .then(datos => {
-                if (datos) {
+        })
+        .then(res => res.json())
+        .then(datos => {
+            if (datos) {
+                const headers = ingles ? ['#', 'Delivery', '$', 'Date'] : ['#', 'Repartidor', '$', 'Fecha'];
+                datos.unshift(headers); // Agrega el encabezado adecuado
+                setData(datos);
+                setCellWidth(Dimensions.get('window').width / 4); // Ajustamos el ancho para 4 columnas
+            }
+        });
+    }, [ingles, contexto.usuario.User, contexto.usuario.Token]);
 
-                    //agregamos el encabezado 
-                    datos.unshift(['#', 'Repartidor', '$', 'Fecha']);
-                    //tenemos la informacion completa a mostrar
-                    setData(datos);
-                    //tenemos una division adecuada de las columnas
-                    setCellWidth(Dimensions.get('window').width / 4)
-                }
-            })
-    }, [])
+    const salir = async () => {
+        const limpiarUsuario = {
+            Id: "",
+            City: "",
+            Email: "",
+            Insignia: "",
+            Is_Verified: false,
+            LastName: "",
+            Name: "",
+            Password: "",
+            Role_Id: "",
+            State: "",
+            Token: "",
+            User: ""
+        };
+        contexto.setUsuario(limpiarUsuario);
+
+        try {
+            await AsyncStorage.removeItem('email');
+            await AsyncStorage.removeItem('password');
+        } catch (error) {
+            console.log(error);
+        }
+        navigate.navigate('Login' as never);
+    };
+
     return (
         <View>
-
             <ImageBackground
                 source={fondo}
                 resizeMode='cover'
                 style={styles.backgroundImageContainer}>
-                <View style={styles.contenedorOpciones}>
+                <View style={[styles.contenedorOpciones, (isIOS ? { marginTop: 43 } : {})]}>
                     <TouchableOpacity
-                        onPress={() => { navigation.goBack(); }}
-                        style={[styles.textoOpciones, styles.flecha]}>
+                        onPress={() => { navigate.goBack(); }}
+                        style={[styles.textoOpcionesF, styles.flecha]}>
                         <SvgFlecha />
                     </TouchableOpacity>
-                    <TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => { salir() }}>
                         <Text style={styles.textoOpciones}>{ingles ? idiomaIngles.salir : idiomaSpanol.salir}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => {
-                        setIngles(!ingles)
-                        contexto.setUsuario({ ...contexto.usuario, English: !ingles })
+                        setIngles(!ingles);
+                        contexto.setUsuario({ ...contexto.usuario, English: !ingles });
                     }}>
                         <Text style={styles.textoOpciones}>{ingles ? 'Es' : 'En'}</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => { navigate.navigate("TerminosyCondiciones" as never); }}>
                         <Text style={styles.textoOpciones}>?</Text>
                     </TouchableOpacity>
                 </View>
@@ -90,29 +123,28 @@ export const DetallesPropinasCliente = () => {
                     start={{ x: 0, y: 0.5 }}
                     end={{ x: 1, y: 1.5 }}
                     style={styles.containerInfo}>
-                    <Text style={styles.textoPregunta}>Revision de propinas</Text>
+                    <Text style={styles.textoPregunta}>{ingles ? idiomaIngles.subtitulo : idiomaSpanol.subtitulo}</Text>
                     <ScrollView horizontal={true} style={{ width: '100%' }}>
                         <ScrollView style={{ width: '100%' }}>
-                        <View>
-                            {
-                                data?.map((row, index) => (
-                                    <View
-                                        key={index} style={[{ flexDirection: 'row' }, index % 2 == 0 ? styles.filaPar : styles.filaImpar]}>
-                                        {row.map((cell, cellIndex) => (
-                                            <Text key={cellIndex} style={[{ width: cellWidth, padding: 10, borderWidth: 1, borderColor: '#ddd', textAlign: 'center', color: "#303030" }]}>
+                            <View>
+                                {data?.map((row: any[], index: number) => (
+                                    <View key={index} style={[{ flexDirection: 'row' }, index % 2 == 0 ? styles.filaPar : styles.filaImpar]}>
+                                        {row.map((cell: any, cellIndex: any) => (
+                                            <Text key={cellIndex} style={[{ width: cellWidth, padding: 10, borderWidth: 1, borderColor: '#ddd', textAlign: 'center', color: '#282828' }]}>
                                                 {cell}
                                             </Text>
                                         ))}
                                     </View>
                                 ))}
-                        </View>
-                            </ScrollView>   
+                            </View>
+                        </ScrollView>
                     </ScrollView>
                 </LinearGradient>
             </ImageBackground>
         </View>
-    )
-}
+    );
+};
+
 const styles = StyleSheet.create({
     centrado: {
         flex: 1,
@@ -165,6 +197,12 @@ const styles = StyleSheet.create({
         textAlign: 'left',
         padding: 10
     },
+    filaPar: {
+        backgroundColor: '#e8e8e8'
+    },
+    filaImpar: {
+        backgroundColor: '#fff'
+    },
     contenedorOpciones: {
         position: 'absolute',
         top: 0,
@@ -186,7 +224,7 @@ const styles = StyleSheet.create({
     flecha: {
         position: 'absolute',
         left: 10,
-        top:10,
+        top: 10,
         paddingTop: 5
     },
     textoOpciones: {
@@ -196,11 +234,5 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         marginTop: 4,
         borderRadius: 4
-    },
-    filaPar: {
-        backgroundColor: '#e8e8e8'
-    },
-    filaImpar: {
-        backgroundColor: '#fff'
     }
-})
+});

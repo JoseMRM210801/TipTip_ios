@@ -27,7 +27,7 @@ import { EliminarCliente } from '../Inicio/EliminarCliente';
 import { ResetPassword } from '../Login/ResetPassword';
 import { LectorQRPrueba } from '../InicioRepartidor/LectorQRPrueba';
 import { PruebaQR } from '../InicioRepartidor/PruebaQR';
-
+import { EnviosRepartidor } from '../InicioRepartidor/EnviosRepartidor';
 
 const Stack = createStackNavigator();
 
@@ -65,6 +65,7 @@ export function Navegacion() {
             <Stack.Screen name="EliminarCliente" component={EliminarCliente}/>
             <Stack.Screen name="LectorQRPrueba" component={LectorQRPrueba}/>
             <Stack.Screen name="PruebaQR" component={PruebaQR}/>
+            <Stack.Screen name="EnviosRepartidor" component={EnviosRepartidor}/>
         </Stack.Navigator>
     );
 }

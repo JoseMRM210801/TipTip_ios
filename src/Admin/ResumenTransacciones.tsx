@@ -91,6 +91,7 @@ export const ResumenTransacciones = () => {
                     style={styles.containerInfo}>
                     <Text style={styles.textoPregunta}>{ingles ? idiomaIngles.pregunta : idiomaSpanol.pregunta}</Text>
                     <ScrollView horizontal={true} style={{ width: '100%' }}>
+                        <ScrollView style={{ width: '100%' }}>
                         <View>
                             {
                                 data?.map((row, index) => (
@@ -109,8 +110,8 @@ export const ResumenTransacciones = () => {
                                     </TouchableOpacity>
                                 ))}
                         </View>
+                        </ScrollView>
                     </ScrollView>
-                   
                 </LinearGradient>
             </ImageBackground>
         </View>

@@ -95,6 +95,7 @@ export const DetallesPropinasRepartidor = () => {
           style={styles.containerInfo}>
           <Text style={styles.textoPregunta}>{ingles ? idiomaIngles.revisionpropina : idiomaSpanol.revisionpropina}</Text>
           <ScrollView horizontal={true} style={{ width: '100%' }}>
+            <ScrollView style={{ width: '100%' }}>
             <View>
               {
                 data?.map((row, index) => (
@@ -108,6 +109,7 @@ export const DetallesPropinasRepartidor = () => {
                   </View>
                 ))}
             </View>
+              </ScrollView>
           </ScrollView>
         </LinearGradient>
       </ImageBackground>

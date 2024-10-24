@@ -100,6 +100,7 @@ export const RevisionPropinas = () => {
                     style={styles.containerInfo}>
                     <Text style={styles.textoPregunta}>{ingles ? idiomaIngles.pregunta : idiomaSpanol.pregunta}</Text>
                     <ScrollView horizontal={true} style={{ width: '100%' }}>
+                        <ScrollView style={{ width: '100%' }}>
                         <View>
                             {
                                 data?.map((row, index) => (
@@ -118,6 +119,7 @@ export const RevisionPropinas = () => {
                                     </TouchableOpacity>
                                 ))}
                         </View>
+                        </ScrollView>
                     </ScrollView>
                     <Text style={{ color: '#303030', alignSelf: 'flex-start', padding: 12, fontSize: 20 }}>{ingles ? idiomaIngles.propuesta : idiomaSpanol.propuesta} {total.toFixed(2)} Dls</Text>
                 </LinearGradient>

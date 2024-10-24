@@ -27,7 +27,18 @@ export const InicioRepartidor = () => {
 
     useEffect(() => {
         setIngles(ingles);
-    }, [contexto.usuario.English]);
+
+        const intervalId = setInterval(async () => {
+            const tips = await fetchTips();
+            setCurrentTips(tips);
+
+            if (initialTips !== null && tips !== initialTips) {
+                setNotificaciones(true); // Cambia el color del botón si hay nuevas propinas
+            }
+        }, 5000); // Se ejecuta cada 5 segundos
+
+        return () => clearInterval(intervalId); // Limpia el intervalo cuando el componente se desmonta
+    }, [initialTips]);
 
     const fetchTips = async () => {
         try {
@@ -111,7 +122,8 @@ export const InicioRepartidor = () => {
         iconoCuenta: 'Mi cuenta',
         iconoDatos: "Editar datos",
         botonDos: 'Dar propina',
-        botonTres: "Probar QR"
+        botonTres: "Probar QR",
+        botonCuatro: "Mis propinas"
     };
 
     const idiomaIngles = {
@@ -122,6 +134,7 @@ export const InicioRepartidor = () => {
         iconoCuenta: 'My account',
         iconoDatos: 'Edit data',
         botonDos: 'Give tip',
+        botoncuatro:'My Tips',
         botonTres: 'Try QR',
     };
 
@@ -167,7 +180,6 @@ export const InicioRepartidor = () => {
                 >
                     <View style={{ position: 'relative', height: '100%', width: '100%' }}>
                         <SvgUsuario fill={"#fff"} stroke={"#fff"} />
-                        {/* No se usa la lógica de notificaciones en este botón */}
                     </View>
                 </Pressable>
             </View>
@@ -212,13 +224,19 @@ export const InicioRepartidor = () => {
                                 </LinearGradient>
                                 <Text style={{ color: '#606060', fontSize: 17, marginTop: 25 }}>{ingles ? idiomaIngles.iconoDatos : idiomaSpanol.iconoDatos}</Text>
                             </Pressable>
-                        </View>
+                        </View> 
                     </View>
-                    <TouchableOpacity
+                   
+                        <TouchableOpacity
+                        onPress={() => { navigate.navigate('EnviosRepartidor' as never) }}
+                        style={{ margin: 5, padding: 10, backgroundColor: '#df662e', borderRadius: 8, width: '90%', marginTop: 25}}>
+                        <Text style={{ color: 'white', textAlign: 'center', fontSize: 22, fontFamily: defaultStyle.fontGeneral.fontFamily }}>{ingles ? idiomaIngles.botoncuatro : idiomaSpanol.botonCuatro}</Text>
+                    </TouchableOpacity> 
+                     <TouchableOpacity
                         onPress={() => { navigate.navigate('LectorQR' as never) }}
                         style={{ margin: 5, padding: 10, backgroundColor: '#df662e', borderRadius: 8, width: '90%', marginTop: 25, marginBottom: 20 }}>
                         <Text style={{ color: 'white', textAlign: 'center', fontSize: 22, fontFamily: defaultStyle.fontGeneral.fontFamily }}>{ingles ? idiomaIngles.botonDos : idiomaSpanol.botonDos}</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> 
                     <TouchableOpacity
                         onPress={() => { navigate.navigate('LectorQRPrueba' as never) }}
                         style={{ margin: 5, padding: 10, backgroundColor: '#df662e', borderRadius: 8, width: '90%', marginBottom: 30 }}>
@@ -414,4 +432,3 @@ const styles = StyleSheet.create({
         height: 50,
     },
 });
-

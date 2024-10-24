@@ -4,10 +4,10 @@ import { Dimensions, ImageBackground, StyleSheet, Text, TouchableOpacity, View }
 import { ScrollView } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import DeviceInfo from 'react-native-device-info';
-import SvgFlecha from '../Admin/SvgFlecha';
 import { AppContext } from '../Contexto/AppContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ruta } from '../Ruta/Ruta';
+import SvgFlecha from '../Admin/SvgFlecha';
 export const ClienteCuenta = () => {
     const fondo: any = require("../../assets/Fondo-Tiptip-01.jpg");
     const navigate = useNavigation();
@@ -120,6 +120,7 @@ export const ClienteCuenta = () => {
                     <Text style={styles.textoPregunta}>{ingles ? idiomaIngles.subtitulo : idiomaSpanol.subtitulo}</Text>
 
                     <ScrollView horizontal={true} style={{ width: '100%' }}>
+                        <ScrollView style={{ width: '100%' }}>
                         <View>
                             {
                                 data?.map((row: any[], index: number) => (
@@ -132,6 +133,7 @@ export const ClienteCuenta = () => {
                                     </View>
                                 ))}
                         </View>
+                        </ScrollView>
                     </ScrollView>
                 </LinearGradient>
             </ImageBackground>
