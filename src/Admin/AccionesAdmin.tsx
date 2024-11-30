@@ -120,7 +120,7 @@ export const AccionesAdmin = () => {
         textoInferiorCliente: 'Revisión de propinas.',
         btnProveedor: 'Proveedor',
         textoInferiorProveedor: 'Ver los datos de todas las transacciones.',
-        btnEliminar: 'Elimnar usuarios',
+        btnEliminar: 'Eliminar usuarios',
         btnCSV: 'Genera el CSV',
         textoInferiorEliminar: 'Para eliminar usuarios debes estar seguros, puesto que esta acción no se puede revertir.',
         textoRestaurar: 'Restaurar fechas de corte'

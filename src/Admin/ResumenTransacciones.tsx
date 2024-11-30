@@ -46,7 +46,7 @@ export const ResumenTransacciones = () => {
                 if (datos) {
 
                     //agregamos el encabezado 
-                    datos.unshift(['#','Provedor','Dinero sin comision','Comision TipTip','PayPal','Dinero Total','Banco','Tipo Cuenta','Numero Cuenta']);
+                    datos.unshift(['#','Provedor','Dinero sin comision','Comision TipTip','PayPal','Dinero Despues de paypal','Dinero a depositar','Banco','Tipo Cuenta','Numero Cuenta']);
                     //tenemos la informacion completa a mostrar
                     setData(datos);
                     //tenemos una division adecuada de las columnas

@@ -51,7 +51,7 @@ export const DetallesPropinasRepartidor = () => {
         if (datos) {
 
           //agregamos el encabezado 
-          datos.unshift(['#', 'Cliente', '$','paypal','Fecha']);
+          datos.unshift(['#', 'Cliente', 'Propinas Totales','Propinas despues de paypal','paypal','Fecha']);
           //tenemos la informacion completa a mostrar
           setData(datos);
           //tenemos una division adecuada de las columnas

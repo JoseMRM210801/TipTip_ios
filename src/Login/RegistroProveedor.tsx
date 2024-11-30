@@ -26,6 +26,7 @@ export const RegistroProveedor = () => {
     const [ingles, setIngles] = useState(contexto.usuario.English);
     const [showPassword, setShowPassword] = useState(false);
     const [showModal, setShowModal] = useState(false);
+    const [showSuccessModal, setShowSuccessModal] = useState(false); // Nuevo estado para el modal de éxito
     const [repeatPassword, setRepeatPassword] = useState('');
 
     useEffect(() => {
@@ -44,7 +45,8 @@ export const RegistroProveedor = () => {
         peticion: 'Estas a punto de registrarte como proveedor de servicios.',
         btn: 'Iniciar',
         servicio: '¿Qué servicio ofreces?',
-        contrasenasNoIguales: 'Las contraseñas no son iguales'
+        contrasenasNoIguales: 'Las contraseñas no son iguales',
+        mensajeExito: 'Verifica el mensaje en el correo' // Mensaje de éxito en español
     };
 
     const idiomaIngles = {
@@ -52,7 +54,8 @@ export const RegistroProveedor = () => {
         peticion: 'Please fill out the information only this time.',
         btn: 'Start',
         servicio: 'What service do you offer?',
-        contrasenasNoIguales: 'Passwords do not match'
+        contrasenasNoIguales: 'Passwords do not match',
+        mensajeExito: 'Check the message in your email' // Mensaje de éxito en inglés
     };
 
     const placeholders = ingles
@@ -93,8 +96,8 @@ export const RegistroProveedor = () => {
         })
             .then(res => res.json())
             .then(data => {
-                navigate.navigate("Credenciales" as never);
                 contexto.setUsuario(data);
+                setShowSuccessModal(true); // Mostrar el modal de éxito
             })
             .catch(error => console.error('Error:', error));
     };
@@ -409,6 +412,27 @@ export const RegistroProveedor = () => {
                         <TouchableOpacity
                             style={styles.modalButton}
                             onPress={() => setShowModal(false)}
+                        >
+                            <Text style={styles.modalButtonText}>OK</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+            <Modal
+                transparent={true}
+                visible={showSuccessModal}
+                animationType="slide"
+                onRequestClose={() => setShowSuccessModal(false)}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalText}>{ingles ? idiomaIngles.mensajeExito : idiomaSpanol.mensajeExito}</Text>
+                        <TouchableOpacity
+                            style={styles.modalButton}
+                            onPress={() => {
+                                setShowSuccessModal(false);
+                                navigate.navigate('Login'); // Redirigir a la pantalla de Login
+                            }}
                         >
                             <Text style={styles.modalButtonText}>OK</Text>
                         </TouchableOpacity>

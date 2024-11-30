@@ -14,13 +14,15 @@ export const CuentaRepartidor = () => {
   const contexto = useContext(AppContext);
   const [ingles, setIngles] = useState(contexto.usuario.English);
   const [totalPropinas, setTotalPropinas] = useState<number>(0);
+  const [TotalReal, setTotalReal] = useState<number>(0);
   const [comisionTipTip, setComisionTipTip] = useState<number>(0);
+  const [TotalDespuesPaypal, setTotalDespuesPaypal] = useState<number>(0);
   const [comisionReal, setComisionReal] = useState<number>(0); // Estado para la comisión real
   const [data, setData] = useState<any[]>([]); // Estado para la tabla de datos
   const [cellWidth, setCellWidth] = useState(0);
   const [modalVisible, setModalVisible] = useState(false); // Estado para mostrar/ocultar el modal
   const [modalInfoVisible, setModalInfoVisible] = useState(false); // Estado para el nuevo modal de información de la tabla
-
+  console.log('CuentaRepartidor:', contexto.usuario.User);
   // Lógica para obtener datos de la API
   useEffect(() => {
     setIngles(contexto.usuario.English);
@@ -36,13 +38,17 @@ export const CuentaRepartidor = () => {
       .then(res => res.json())
       .then(data => {
         if (data && data.Donado) {
-          const donado = parseFloat(data.Donado);
+          //calculo de tiptip sin comisiones
+          const donado = parseFloat(data.total);
           setTotalPropinas(donado);
           // Calculamos la comisión de TipTip
           const comision = calcularComisionTipTip(donado);
           setComisionTipTip(comision);
+          // Calculamos el total real (total de propinas - comisión de TipTip)
+          const totaldespuesdepaypal = parseFloat(data.Donado);
+          setTotalDespuesPaypal(totaldespuesdepaypal);
           // Calculamos la comisión real (total de propinas - comisión de TipTip)
-          const comisionRealCalculada = donado - comision;
+          const comisionRealCalculada = totaldespuesdepaypal - comision;
           setComisionReal(comisionRealCalculada);
         }
       })
@@ -61,7 +67,9 @@ export const CuentaRepartidor = () => {
       .then(res => res.json())
       .then(datos => {
         if (datos) {
-          const headers = ingles ? ['#', 'Client', '$', 'Paypal Commission', 'Date'] : ['#', 'Cliente', '$', 'Comision Paypal', 'Fecha'];
+          console.log('Datos del usurio', contexto.usuario.User);
+          console.log('Datos del repartidor:', contexto.usuario.Id);
+          const headers = ingles ? ['#', 'Client','Total','Total after Paypal', 'Paypal Commission', 'Date'] : ['#', 'Cliente', 'Total','Total despues de Paypal', 'Comision Paypal', 'Fecha'];
           datos.unshift(headers); // Agrega el encabezado adecuado al principio de los datos
           setData(datos);
           setCellWidth(Dimensions.get('window').width / 4); // Ajusta el ancho de las celdas
@@ -77,29 +85,40 @@ export const CuentaRepartidor = () => {
     let comision = 0;
 
     // Aplicamos $1 por cada $20 y $0.10 por cada dólar adicional
-    if (total > 20) {
-        const cantidadSobre20 = total - 20; // Parte que excede los primeros $20
-        const comisionBase = Math.floor(total / 20); // Se resta $1 por cada $20 completos
-        const comisionAdicional = cantidadSobre20 * 0.10; // Se resta $0.10 por cada dólar adicional sobre los $20
-        comision = comisionBase + comisionAdicional;
-    }
-
+    // if (total > 20) {
+    //     const cantidadSobre20 = total - 20; // Parte que excede los primeros $20
+    //     const comisionBase = Math.floor(total / 20); // Se resta $1 por cada $20 completos
+    //     const comisionAdicional = cantidadSobre20 * 0.10; // Se resta $0.10 por cada dólar adicional sobre los $20
+    //     comision = comisionBase + comisionAdicional;
+    // }
+    if (total > 20) { 
+      const comisionAdicional = total * 0.10; // Se resta $0.10 por cada dólar adicional sobre los $20
+      comision =  comisionAdicional;
+  }
     return comision;
   };
 
   const idiomaSpanol = {
     salir: 'Salir',
-    comisionExplicacion: 'Se aplica una comisión de $1 por cada $20. Además, se aplica una comisión de 0.10 por cada dólar adicional sobre los primeros $20.',
+    comisionExplicacion: 'Se aplica una comisión de 0.10 por cada dolar despues de los 20 dolares.',
     cerrar: 'Cerrar',
     explicacion: '¿Qué significa esto?',
-    infoTabla: 'La tabla contiene los siguientes datos:\n\n# - Número de entrada\nCliente - Nombre del cliente\n$ - Cantidad de propina\nComisión Paypal - Comisión aplicada por Paypal\nFecha - Fecha de la transacción'
+    infoTabla: 'La tabla contiene los siguientes datos:\n\n# - Número de entrada\nCliente - Nombre del cliente\n$ - Cantidad de propina\nComisión Paypal - Comisión aplicada por Paypal\nFecha - Fecha de la transacción',
+    TotalFinal: 'Total Neto',
+    TotalDespuesPaypal: 'Total despues de Paypal',
+    ComisionTipTip: 'Comisión de TipTip',
+    TotalPropinasFinal: 'Total Propinas Final'
   };
   const idiomaIngles = {
     salir: 'Exit',
-    comisionExplicacion: 'A commission of $1 is applied for every $20. Additionally, a 0.10 commission is applied for every dollar beyond the first $20.',
+    comisionExplicacion: 'A commission of $0.10 is applied for every dollar after $20 dollars.',
     cerrar: 'Close',
     explicacion: 'What does this mean?',
-    infoTabla: 'The table contains the following data:\n\n# - Entry number\nClient - Name of the client\n$ - Amount of tips\nPaypal Commission - Commission applied by Paypal\nDate - Date of the transaction'
+    infoTabla: 'The table contains the following data:\n\n# - Entry number\nClient - Name of the client\n$ - Amount of tips\nPaypal Commission - Commission applied by Paypal\nDate - Date of the transaction',
+    TotalFinal: 'Total Neto',
+    TotalDespuesPaypal: 'Total after Paypal',
+    ComisionTipTip: 'TipTip Commission',
+    TotalPropinasFinal: 'Total Tips Final'
   };
 
   const isIOS = DeviceInfo.getSystemName() === 'iOS';
@@ -176,12 +195,15 @@ export const CuentaRepartidor = () => {
           {/* Visualización del total de propinas, comisión de TipTip y comisión real */}
           <View style={styles.totalComisionContainer}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={styles.totalText}>Comisión de TipTip: ${comisionTipTip.toFixed(2)}</Text>
+              
+             <Text style={styles.totalText}>{ingles?idiomaIngles.TotalFinal:idiomaSpanol.TotalFinal} ${totalPropinas.toFixed(2)}</Text>
               <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.botonInterrogacion}>
                 <Text style={{ fontSize: 18, color: '#000' }}>?</Text>
               </TouchableOpacity>
             </View>
-            <Text style={styles.totalText}>Total Propinas: ${comisionReal.toFixed(2)}</Text>
+            <Text style={styles.totalText}>{ingles? idiomaIngles.TotalDespuesPaypal:idiomaSpanol.TotalDespuesPaypal} ${TotalDespuesPaypal.toFixed(2)}</Text>
+            <Text style={styles.totalText}>{ingles? idiomaIngles.ComisionTipTip:idiomaSpanol.ComisionTipTip} ${comisionTipTip.toFixed(2)}</Text>
+            <Text style={styles.totalText}>{ingles? idiomaIngles.TotalPropinasFinal:idiomaSpanol.TotalPropinasFinal} ${comisionReal.toFixed(2)}</Text>
           </View>
 
           {/* Modal que explica el cálculo de la comisión */}

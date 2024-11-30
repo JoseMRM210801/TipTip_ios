@@ -54,7 +54,7 @@ export const RevisionPropinas = () => {
                     setTotal(totalAuxiliar);
 
                     //agregamos el encabezado 
-                    datos.unshift(['#', 'Cliente', '$','Comision Paypal', 'Proveedor', 'Fecha']);
+                    datos.unshift(['#', 'Cliente', 'Propinas Totales','Comision Paypal', 'Proveedor', 'Fecha']);
                     //tenemos la informacion completa a mostrar
                     setData(datos);
                     //tenemos una division adecuada de las columnas

@@ -68,40 +68,7 @@ export const BotonPropina = () => {
    
         return { comision };
     };
-    console.log("Provedor",contexto.usuario.User)
-    console.log("es cliente",contexto.usuario.Id)
-    // const paymentSucess = async (id) => {
-    //     try {
-    //         const res = await paypalApi.capturePayment(id, accessToken || "", contexto.usuario.Token);
-    //         if (res !== 'error') {
-    //             // Calcular la comisión y el valor neto después de la comisión
-    //             const {  comision } = calcularComision(contador, res);
-                
-    //             fetch(`${Ruta}/tip/add`, {
-    //                 method: 'POST',
-    //                 mode: 'cors',
-    //                 headers: {
-    //                     'Content-Type': 'application/json',
-    //                     'token': contexto.usuario.Token,
-    //                 },
-    //                 body: JSON.stringify({
-    //                     client_Id: contexto.usuario.Id,
-    //                     delivery_Id: idDelivery,
-    //                     Donated: res, // Valor neto después de la comisión
-    //                     paypal: comision,        // Valor total donado
-    //                     comision: comision, // Comisión de PayPal
-    //                 }),
-    //             })
-    //             .then((response) => response.json())
-    //             navigate.navigate('PantallaExito');
-    //         }
-    //         clearPaypalState();
-    //     } catch (error) {
-    //         console.log(id);
-    //         console.log("error raised in payment capture", error);
-          
-    //     }
-    // };
+    
     const paymentSucess = async (id) => {
         try {
             const res = await paypalApi.capturePayment(id, accessToken || "", contexto.usuario.Token);
@@ -122,7 +89,8 @@ export const BotonPropina = () => {
                         Donated: res, // Valor neto después de la comisión
                         paypal: comision,        // Valor total donado
                         comision: comision, // Comisión de PayPal
-                        userprovider:contexto.usuario.User
+                        userprovider:codigo,
+                        total: contador,
                     }),
                 })
                 .then((response) => response.json())
@@ -300,15 +268,19 @@ export const BotonPropina = () => {
                                 </LinearGradient>
                             </TouchableOpacity>
                             <View style={{ width: '28%', alignItems: 'center' }}>
-                                <TextInput
-                                    placeholder={contador.toString()}
-                                    placeholderTextColor="#282828"
-                                    style={styles.inputNumero}
-                                    keyboardType="numeric"
-                                    onChangeText={(value) => setContador(parseInt(value, 10) || contador)}
-                                />
-                                <Text style={{ fontSize: 18, marginTop: 15, color: '#282828' }}>dls</Text>
-                            </View>
+    <TextInput
+        value={contador.toString()} // Muestra el valor actual del contador
+        placeholderTextColor="#282828"
+        style={styles.inputNumero}
+        keyboardType="numeric"
+        onChangeText={(value) => {
+            // Validar que sea un número y actualizar el estado
+            const numericValue = parseInt(value, 10);
+            setContador(!isNaN(numericValue) ? numericValue : 0);
+        }}
+    />
+    <Text style={{ fontSize: 18, marginTop: 15, color: '#282828' }}>dls</Text>
+</View>
                             <TouchableOpacity onPress={handlePressB} style={[styles.botonesInput, styles.botonMas]}>
                                 <Text style={[styles.buttonText, { color: '#fff' }]}>+</Text>
                             </TouchableOpacity>

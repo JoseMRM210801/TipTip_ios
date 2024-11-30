@@ -13,6 +13,7 @@ import { AppContext } from "../Contexto/AppContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ScrollView } from "react-native-gesture-handler";
 import { Ruta } from "../Ruta/Ruta";
+import SvgDinero2 from "./SvgDinero2";
 
 export const InicioRepartidor = () => {
 
@@ -166,10 +167,14 @@ export const InicioRepartidor = () => {
                         navigate.navigate('CuentaRepartidor' as never) 
                     }}
                 >
-                    <View style={{ position: 'relative', height: '100%', width: '100%', overflow: "hidden" }}>
-                        <SvgDinero fill={"#fff"} stroke={"#fff"} />
-                        <View style={notificaciones ? styles.circulo : styles.circuloApagado}></View>
-                    </View>
+<View style={{ position: 'relative', height: '100%', width: '100%', overflow: "hidden" }}>
+    {notificaciones ? (
+        <SvgDinero fill={"#fff"} stroke={"#fff"} />
+    ) : (
+        <SvgDinero2 fill={"#fff"} stroke={"#fff"} />
+    )}
+    <View style={notificaciones ? styles.circulo : styles.circuloApagado}></View>
+</View>
                 </Pressable>
 
                 <Pressable 
